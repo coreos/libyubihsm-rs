@@ -1,0 +1,10 @@
+[package]
+name = "yubihsm"
+version = "0.1.0"
+authors = ["James Forcier <james.forcier@coreos.com>"]
+
+[build-dependencies]
+bindgen = "0.32"
+
+[dependencies]
+error-chain = "0.11"
