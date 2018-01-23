@@ -1,5 +1,5 @@
 use errors::*;
-use connector;
+use connector::Connector;
 
 use yubihsm_sys::{self, yh_connector, yh_rc, yh_rc_YHR_SUCCESS};
 
@@ -34,7 +34,7 @@ impl Yubihsm {
         })
     }
 
-    pub fn create_connector(url: &str) -> Result<connector::Connector> {
+    pub fn create_connector(url: &str) -> Result<Connector> {
         let url_c = CString::new(url)?;
         let mut connector_ptr: *mut yh_connector = ptr::null_mut();
 
@@ -46,8 +46,6 @@ impl Yubihsm {
             }
         }
 
-        Ok(connector::Connector {
-            this: connector_ptr,
-        })
+        Ok(Connector::new(connector_ptr))
     }
 }

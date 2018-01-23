@@ -13,7 +13,9 @@ mod yubihsm_sys {
 mod errors;
 mod yubihsm;
 mod connector;
+mod session;
 
 pub use errors::*;
 pub use yubihsm::*;
 pub use connector::*;
+pub use session::*;
