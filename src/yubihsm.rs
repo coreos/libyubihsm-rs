@@ -35,7 +35,7 @@ impl Yubihsm {
         })
     }
 
-    pub fn create_connector(url: &str) -> Result<Connector> {
+    pub fn create_connector(&self, url: &str) -> Result<Connector> {
         let url_c = CString::new(url)?;
         let mut connector_ptr: *mut yh_connector = ptr::null_mut();
 
