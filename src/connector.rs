@@ -86,3 +86,17 @@ impl Connector {
         Ok(Session::new(session_ptr))
     }
 }
+
+impl Drop for Connector {
+    fn drop(&mut self) {
+        if self.connected.get() {
+            unsafe {
+                let rc = ReturnCode::from(yubihsm_sys::yh_disconnect(self.this.get()));
+
+                if rc != ReturnCode::Success {
+                    panic!("failed to disconnect session: {}", rc);
+                }
+            }
+        }
+    }
+}
