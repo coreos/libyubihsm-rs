@@ -1,5 +1,6 @@
 use errors::*;
 use connector::Connector;
+use types::*;
 
 use yubihsm_sys::{self, yh_connector, yh_rc, yh_rc_YHR_SUCCESS};
 
@@ -39,9 +40,9 @@ impl Yubihsm {
         let mut connector_ptr: *mut yh_connector = ptr::null_mut();
 
         unsafe {
-            let ret = yubihsm_sys::yh_init_connector(url_c.as_ptr(), &mut connector_ptr);
+            let ret = ReturnCode::from(yubihsm_sys::yh_init_connector(url_c.as_ptr(), &mut connector_ptr));
 
-            if ret != yh_rc_YHR_SUCCESS {
+            if ret != ReturnCode::Success {
                 bail!(format!("couldn't create connector: {}", ret));
             }
         }

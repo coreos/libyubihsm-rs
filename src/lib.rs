@@ -11,11 +11,13 @@ mod yubihsm_sys {
 }
 
 mod errors;
+mod types;
 mod yubihsm;
 mod connector;
 mod session;
 
 pub use errors::*;
+pub use types::*;
 pub use yubihsm::*;
 pub use connector::*;
 pub use session::*;

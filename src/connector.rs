@@ -1,7 +1,8 @@
 use errors::*;
+use types::*;
 use session::Session;
 
-use yubihsm_sys::{self, yh_connector, yh_session, yh_rc_YHR_SUCCESS, YH_CONTEXT_LEN};
+use yubihsm_sys::{self, yh_connector, yh_session, YH_CONTEXT_LEN};
 
 use std::cell::Cell;
 use std::ffi::CString;
@@ -25,9 +26,9 @@ impl Connector {
         let mut this = self.this.get();
 
         unsafe {
-            let ret = yubihsm_sys::yh_connect_best(&mut this, 1, ptr::null_mut());
+            let ret = ReturnCode::from(yubihsm_sys::yh_connect_best(&mut this, 1, ptr::null_mut()));
 
-            if ret != yh_rc_YHR_SUCCESS {
+            if ret != ReturnCode::Success {
                 bail!(format!("failed to connect: {}", ret));
             }
         }
@@ -56,7 +57,7 @@ impl Connector {
         let password_bytes = password_c.as_bytes();
 
         unsafe {
-            let mut ret = yubihsm_sys::yh_create_session_derived(
+            let mut ret = ReturnCode::from(yubihsm_sys::yh_create_session_derived(
                 self.this.get(),
                 auth_key_id,
                 password_bytes.as_ptr(),
@@ -65,19 +66,19 @@ impl Connector {
                 context.as_mut_ptr(),
                 YH_CONTEXT_LEN as usize,
                 &mut session_ptr,
-            );
+            ));
 
-            if ret != yh_rc_YHR_SUCCESS {
+            if ret != ReturnCode::Success {
                 bail!(format!("failed to create session: {}", ret));
             }
 
-            ret = yubihsm_sys::yh_authenticate_session(
+            ret = ReturnCode::from(yubihsm_sys::yh_authenticate_session(
                 session_ptr,
                 context.as_mut_ptr(),
                 YH_CONTEXT_LEN as usize,
-            );
+            ));
 
-            if ret != yh_rc_YHR_SUCCESS {
+            if ret != ReturnCode::Success {
                 bail!(format!("failed to authenticate session: {}", ret));
             }
         }
