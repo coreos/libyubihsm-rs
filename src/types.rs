@@ -259,6 +259,61 @@ impl From<yh_algorithm> for Algorithm {
     }
 }
 
+#[allow(non_upper_case_globals)]
+impl From<Algorithm> for yh_algorithm {
+    fn from(alg: Algorithm) -> Self {
+        match alg {
+            Algorithm::RsaPkcs1Sha1 => yh_algorithm_YH_ALGO_RSA_PKCS1_SHA1,
+            Algorithm::RsaPkcs1Sha256 => yh_algorithm_YH_ALGO_RSA_PKCS1_SHA256,
+            Algorithm::RsaPkcs1Sha384 => yh_algorithm_YH_ALGO_RSA_PKCS1_SHA384,
+            Algorithm::RsaPkcs1Sha512 => yh_algorithm_YH_ALGO_RSA_PKCS1_SHA512,
+            Algorithm::RsaPssSha1 => yh_algorithm_YH_ALGO_RSA_PSS_SHA1,
+            Algorithm::RsaPssSha256 => yh_algorithm_YH_ALGO_RSA_PSS_SHA256,
+            Algorithm::RsaPssSha384 => yh_algorithm_YH_ALGO_RSA_PSS_SHA384,
+            Algorithm::RsaPssSha512 => yh_algorithm_YH_ALGO_RSA_PSS_SHA512,
+            Algorithm::Rsa2048 => yh_algorithm_YH_ALGO_RSA_2048,
+            Algorithm::Rsa3072 => yh_algorithm_YH_ALGO_RSA_3072,
+            Algorithm::Rsa4096 => yh_algorithm_YH_ALGO_RSA_4096,
+            Algorithm::EcP224 => yh_algorithm_YH_ALGO_EC_P224,
+            Algorithm::EcP256 => yh_algorithm_YH_ALGO_EC_P256,
+            Algorithm::EcP384 => yh_algorithm_YH_ALGO_EC_P384,
+            Algorithm::EcP521 => yh_algorithm_YH_ALGO_EC_P521,
+            Algorithm::EcK256 => yh_algorithm_YH_ALGO_EC_K256,
+            Algorithm::EcBp256 => yh_algorithm_YH_ALGO_EC_BP256,
+            Algorithm::EcBp384 => yh_algorithm_YH_ALGO_EC_BP384,
+            Algorithm::EcBp512 => yh_algorithm_YH_ALGO_EC_BP512,
+            Algorithm::HmacSha1 => yh_algorithm_YH_ALGO_HMAC_SHA1,
+            Algorithm::HmacSha256 => yh_algorithm_YH_ALGO_HMAC_SHA256,
+            Algorithm::HmacSha384 => yh_algorithm_YH_ALGO_HMAC_SHA384,
+            Algorithm::HmacSha512 => yh_algorithm_YH_ALGO_HMAC_SHA512,
+            Algorithm::EcEcdsaSha1 => yh_algorithm_YH_ALGO_EC_ECDSA_SHA1,
+            Algorithm::EcEcdsaSha256 => yh_algorithm_YH_ALGO_EC_ECDSA_SHA256,
+            Algorithm::EcEcdsaSha384 => yh_algorithm_YH_ALGO_EC_ECDSA_SHA384,
+            Algorithm::EcEcdsaSha512 => yh_algorithm_YH_ALGO_EC_ECDSA_SHA512,
+            Algorithm::EcEcdh => yh_algorithm_YH_ALGO_EC_ECDH,
+            Algorithm::RsaOaepSha1 => yh_algorithm_YH_ALGO_RSA_OAEP_SHA1,
+            Algorithm::RsaOaepSha256 => yh_algorithm_YH_ALGO_RSA_OAEP_SHA256,
+            Algorithm::RsaOaepSha384 => yh_algorithm_YH_ALGO_RSA_OAEP_SHA384,
+            Algorithm::RsaOaepSha512 => yh_algorithm_YH_ALGO_RSA_OAEP_SHA512,
+            Algorithm::Aes128CcmWrap => yh_algorithm_YH_ALGO_AES128_CCM_WRAP,
+            Algorithm::Aes192CcmWrap => yh_algorithm_YH_ALGO_AES192_CCM_WRAP,
+            Algorithm::Aes256CcmWrap => yh_algorithm_YH_ALGO_AES256_CCM_WRAP,
+            Algorithm::OpaqueData => yh_algorithm_YH_ALGO_OPAQUE_DATA,
+            Algorithm::OpaqueX509Cert => yh_algorithm_YH_ALGO_OPAQUE_X509_CERT,
+            Algorithm::Mgf1Sha1 => yh_algorithm_YH_ALGO_MGF1_SHA1,
+            Algorithm::Mgf1Sha256 => yh_algorithm_YH_ALGO_MGF1_SHA256,
+            Algorithm::Mgf1Sha384 => yh_algorithm_YH_ALGO_MGF1_SHA384,
+            Algorithm::Mgf1Sha512 => yh_algorithm_YH_ALGO_MGF1_SHA512,
+            Algorithm::TemplSsh => yh_algorithm_YH_ALGO_TEMPL_SSH,
+            Algorithm::YubicoOtpAes128 => yh_algorithm_YH_ALGO_YUBICO_OTP_AES128,
+            Algorithm::YubicoOtpAes192 => yh_algorithm_YH_ALGO_YUBICO_OTP_AES192,
+            Algorithm::YubicoOtpAes256 => yh_algorithm_YH_ALGO_YUBICO_OTP_AES256,
+            Algorithm::YubicoAesAuth => yh_algorithm_YH_ALGO_YUBICO_AES_AUTH,
+            Algorithm::EcEd25519 => yh_algorithm_YH_ALGO_EC_ED25519,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct DeviceInfo {
     pub major_version: u8,
