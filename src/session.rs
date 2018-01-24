@@ -46,6 +46,125 @@ impl Session {
 
         Ok(out)
     }
+
+    pub fn sign_ecdsa<T: AsRef<[u8]>>(&self, key_id: u16, data: T) -> Result<Vec<u8>> {
+        // The libyubihsm documentation makes no mention of how large this buffer should be, and
+        // there don't appear to be any constants related to signature size, so this is just a
+        // rough guess.
+        let mut out_size: usize = 512;
+        let mut out: Vec<u8> = Vec::with_capacity(out_size);
+
+        let data_slice = data.as_ref();
+
+        unsafe {
+            let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_ecdsa(
+                self.this.get(),
+                key_id,
+                data_slice.as_ptr(),
+                data_slice.len(),
+                out.as_mut_ptr(),
+                &mut out_size,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!(format!("couldn't sign_ecdsa: {}", ret));
+            }
+
+            out.set_len(out_size);
+        }
+
+        Ok(out)
+    }
+
+    pub fn sign_eddsa<T: AsRef<[u8]>>(&self, key_id: u16, data: T) -> Result<Vec<u8>> {
+        // The libyubihsm documentation makes no mention of how large this buffer should be, and
+        // there don't appear to be any constants related to signature size, so this is just a
+        // rough guess.
+        let mut out_size: usize = 512;
+        let mut out: Vec<u8> = Vec::with_capacity(out_size);
+
+        let data_slice = data.as_ref();
+
+        unsafe {
+            let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_eddsa(
+                self.this.get(),
+                key_id,
+                data_slice.as_ptr(),
+                data_slice.len(),
+                out.as_mut_ptr(),
+                &mut out_size,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!(format!("couldn't sign_eddsa: {}", ret));
+            }
+
+            out.set_len(out_size);
+        }
+
+        Ok(out)
+    }
+
+    pub fn sign_pkcs1v1_5<T: AsRef<[u8]>>(&self, key_id: u16, hashed: bool, data: T) -> Result<Vec<u8>> {
+        // The libyubihsm documentation makes no mention of how large this buffer should be, and
+        // there don't appear to be any constants related to signature size, so this is just a
+        // rough guess.
+        let mut out_size: usize = 512;
+        let mut out: Vec<u8> = Vec::with_capacity(out_size);
+
+        let data_slice = data.as_ref();
+
+        unsafe {
+            let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_pkcs1v1_5(
+                self.this.get(),
+                key_id,
+                hashed,
+                data_slice.as_ptr(),
+                data_slice.len(),
+                out.as_mut_ptr(),
+                &mut out_size,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!(format!("couldn't sign_pkcs1v1_5: {}", ret));
+            }
+
+            out.set_len(out_size);
+        }
+
+        Ok(out)
+    }
+
+    pub fn sign_pss<T: AsRef<[u8]>>(&self, key_id: u16, salt_len: usize, mgf1_algorithm: Algorithm, data: T) -> Result<Vec<u8>> {
+        // The libyubihsm documentation makes no mention of how large this buffer should be, and
+        // there don't appear to be any constants related to signature size, so this is just a
+        // rough guess.
+        let mut out_size: usize = 512;
+        let mut out: Vec<u8> = Vec::with_capacity(out_size);
+
+        let data_slice = data.as_ref();
+
+        unsafe {
+            let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_pss(
+                self.this.get(),
+                key_id,
+                data_slice.as_ptr(),
+                data_slice.len(),
+                out.as_mut_ptr(),
+                &mut out_size,
+                salt_len,
+                mgf1_algorithm.into(),
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!(format!("couldn't sign_pss: {}", ret));
+            }
+
+            out.set_len(out_size);
+        }
+
+        Ok(out)
+    }
 }
 
 impl Drop for Session {
