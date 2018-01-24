@@ -2,7 +2,8 @@ use errors::*;
 use types::*;
 use session::Session;
 
-use yubihsm_sys::{self, yh_connector, yh_session, YH_CONTEXT_LEN};
+use yubihsm_sys::{self, yh_algorithm, yh_connector, yh_session, YH_CONTEXT_LEN,
+                  YH_MAX_ALGORITHM_COUNT};
 
 use std::cell::Cell;
 use std::ffi::CString;
@@ -86,6 +87,50 @@ impl Connector {
         }
 
         Ok(Session::new(session_ptr))
+    }
+
+    pub fn get_device_info(&self) -> Result<DeviceInfo> {
+        let mut major: u8 = 0;
+        let mut minor: u8 = 0;
+        let mut patch: u8 = 0;
+        let mut serial: u32 = 0;
+        let mut log_total: u8 = 0;
+        let mut log_used: u8 = 0;
+        let mut algorithms: Vec<yh_algorithm> = Vec::with_capacity(YH_MAX_ALGORITHM_COUNT as usize);
+        let mut algorithm_count = YH_MAX_ALGORITHM_COUNT as usize;
+
+        unsafe {
+            let ret = ReturnCode::from(yubihsm_sys::yh_util_get_device_info(
+                self.this.get(),
+                &mut major,
+                &mut minor,
+                &mut patch,
+                &mut serial,
+                &mut log_total,
+                &mut log_used,
+                algorithms.as_mut_ptr(),
+                &mut algorithm_count,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!(format!("failed to get device info: {}", ret));
+            }
+
+            algorithms.set_len(algorithm_count);
+        }
+
+        Ok(DeviceInfo {
+            major_version: major,
+            minor_version: minor,
+            patch_version: patch,
+            serial: serial,
+            log_capacity: log_total,
+            log_used: log_used,
+            algorithms: algorithms
+                .into_iter()
+                .map(|a| Algorithm::from(a))
+                .collect::<Vec<_>>(),
+        })
     }
 }
 

@@ -258,3 +258,14 @@ impl From<yh_algorithm> for Algorithm {
         }
     }
 }
+
+#[derive(Clone, Debug)]
+pub struct DeviceInfo {
+    pub(crate) major_version: u8,
+    pub(crate) minor_version: u8,
+    pub(crate) patch_version: u8,
+    pub(crate) serial: u32,
+    pub(crate) log_capacity: u8,
+    pub(crate) log_used: u8,
+    pub(crate) algorithms: Vec<Algorithm>,
+}
