@@ -72,6 +72,8 @@ impl Connector {
                 bail!(format!("failed to create session: {}", ret));
             }
 
+            context.set_len(YH_CONTEXT_LEN as usize);
+
             ret = ReturnCode::from(yubihsm_sys::yh_authenticate_session(
                 session_ptr,
                 context.as_mut_ptr(),
