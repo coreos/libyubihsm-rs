@@ -17,6 +17,8 @@ mod types;
 mod yubihsm;
 mod connector;
 mod session;
+#[cfg(test)]
+mod tests;
 
 pub use errors::*;
 pub use types::*;

@@ -4,9 +4,11 @@ use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
 
 /// Wrapper struct for "encoded" Domains. This is the type expected by libyubihsm functions.
-struct DomainParam(u16);
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(crate) struct DomainParam(pub(crate) u16);
 /// Wrapper struct for a single Domain.
-pub struct Domain(u8);
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct Domain(pub(crate) u8);
 
 impl From<Domain> for String {
     fn from(dom: Domain) -> Self {
