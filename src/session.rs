@@ -1,9 +1,42 @@
 use errors::*;
 use types::*;
 
-use yubihsm_sys::{self, yh_session};
+use yubihsm_sys::{self, yh_capabilities, yh_session};
 
 use std::cell::Cell;
+use std::ffi::CString;
+
+macro_rules! generate_key {
+    ($name:ident, $yh_func:ident) => (
+        pub fn $name(
+            &self,
+            key_id: u16,
+            label: &str,
+            domains: &[Domain],
+            capabilities: &[Capability],
+            algorithm: Algorithm
+        ) -> Result<()> {
+            let mut key_id_ptr = key_id;
+            let c_label = CString::new(label)?;
+            let lib_domains = DomainParam::from(Vec::from(domains));
+            let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+
+            unsafe {
+                match ReturnCode::from(yubihsm_sys::$yh_func(
+                    self.this.get(),
+                    &mut key_id_ptr,
+                    c_label.as_ptr(),
+                    lib_domains.0,
+                    &lib_caps,
+                    algorithm.into(),
+                )) {
+                    ReturnCode::Success => Ok(()),
+                    e => bail!(format!("$name failed: {}", e)),
+                }
+            }
+        }
+    )
+}
 
 /// Represents a `Session` with the HSM.
 ///
@@ -175,6 +208,45 @@ impl Session {
         }
 
         Ok(out)
+    }
+
+    generate_key!(generate_key_ec, yh_util_generate_key_ec);
+
+    generate_key!(generate_key_ed, yh_util_generate_key_ed);
+
+    generate_key!(generate_key_hmac, yh_util_generate_key_hmac);
+
+    generate_key!(generate_key_rsa, yh_util_generate_key_rsa);
+
+    pub fn generate_wrapkey(
+        &self,
+        key_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        delegated_capabilities: &[Capability],
+        algorithm: Algorithm,
+    ) -> Result<()> {
+        let mut key_id_ptr = key_id;
+        let c_label = CString::new(label)?;
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_delegated_caps = yh_capabilities::from(Vec::from(delegated_capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_generate_key_wrap(
+                self.this.get(),
+                &mut key_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                algorithm.into(),
+                &lib_delegated_caps,
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!(format!("generate_key_wrap failed: {}", e)),
+            }
+        }
     }
 }
 
