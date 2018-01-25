@@ -40,7 +40,10 @@ impl Yubihsm {
         let mut connector_ptr: *mut yh_connector = ptr::null_mut();
 
         unsafe {
-            let ret = ReturnCode::from(yubihsm_sys::yh_init_connector(url_c.as_ptr(), &mut connector_ptr));
+            let ret = ReturnCode::from(yubihsm_sys::yh_init_connector(
+                url_c.as_ptr(),
+                &mut connector_ptr,
+            ));
 
             if ret != ReturnCode::Success {
                 bail!(format!("couldn't create connector: {}", ret));

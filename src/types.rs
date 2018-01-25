@@ -34,7 +34,7 @@ impl From<Domain> for DomainParam {
 
 impl<T> From<T> for DomainParam
 where
-    T: AsRef<[Domain]> + IntoIterator<Item=Domain>,
+    T: AsRef<[Domain]> + IntoIterator<Item = Domain>,
 {
     fn from(doms: T) -> Self {
         let mut out: u16 = 0;
@@ -493,7 +493,7 @@ impl From<Capability> for yh_capabilities {
 
 impl<T> From<T> for yh_capabilities
 where
-    T: AsRef<[Capability]> + IntoIterator<Item=Capability>,
+    T: AsRef<[Capability]> + IntoIterator<Item = Capability>,
 {
     fn from(caps: T) -> Self {
         let joined_caps = caps.into_iter()

@@ -105,7 +105,12 @@ impl Session {
         Ok(out)
     }
 
-    pub fn sign_pkcs1v1_5<T: AsRef<[u8]>>(&self, key_id: u16, hashed: bool, data: T) -> Result<Vec<u8>> {
+    pub fn sign_pkcs1v1_5<T: AsRef<[u8]>>(
+        &self,
+        key_id: u16,
+        hashed: bool,
+        data: T,
+    ) -> Result<Vec<u8>> {
         // The libyubihsm documentation makes no mention of how large this buffer should be, and
         // there don't appear to be any constants related to signature size, so this is just a
         // rough guess.
@@ -135,7 +140,13 @@ impl Session {
         Ok(out)
     }
 
-    pub fn sign_pss<T: AsRef<[u8]>>(&self, key_id: u16, salt_len: usize, mgf1_algorithm: Algorithm, data: T) -> Result<Vec<u8>> {
+    pub fn sign_pss<T: AsRef<[u8]>>(
+        &self,
+        key_id: u16,
+        salt_len: usize,
+        mgf1_algorithm: Algorithm,
+        data: T,
+    ) -> Result<Vec<u8>> {
         // The libyubihsm documentation makes no mention of how large this buffer should be, and
         // there don't appear to be any constants related to signature size, so this is just a
         // rough guess.
