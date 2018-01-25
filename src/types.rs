@@ -10,7 +10,7 @@ pub struct Domain(u8);
 
 impl From<Domain> for String {
     fn from(dom: Domain) -> Self {
-        String::from(format!("{}", dom.0))
+        format!("{}", dom.0)
     }
 }
 

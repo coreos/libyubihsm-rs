@@ -128,7 +128,7 @@ impl Connector {
             log_used: log_used,
             algorithms: algorithms
                 .into_iter()
-                .map(|a| Algorithm::from(a))
+                .map(Algorithm::from)
                 .collect::<Vec<_>>(),
         })
     }

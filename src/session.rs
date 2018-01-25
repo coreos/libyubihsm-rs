@@ -38,7 +38,7 @@ impl Session {
             }
 
             if out_size != len {
-                bail!(format!("data sizes didn't match"));
+                bail!("data sizes didn't match");
             }
 
             out.set_len(out_size);
