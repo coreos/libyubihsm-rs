@@ -3,6 +3,61 @@ use yubihsm_sys::*;
 use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
 
+/// Wrapper struct for "encoded" Domains. This is the type expected by libyubihsm functions.
+struct DomainParam(u16);
+/// Wrapper struct for a single Domain.
+pub struct Domain(u8);
+
+impl From<Domain> for String {
+    fn from(dom: Domain) -> Self {
+        String::from(format!("{}", dom.0))
+    }
+}
+
+impl From<Domain> for DomainParam {
+    fn from(dom: Domain) -> Self {
+        let mut out: u16 = 0;
+        let dom_str = CString::new(format!("{}", dom.0))
+            .unwrap_or_else(|_| panic!("couldn't make CString from Domain"));
+
+        unsafe {
+            let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
+
+            if ret != ReturnCode::Success {
+                panic!(format!("parse_domains failed: {}", ret));
+            }
+        }
+
+        DomainParam(out)
+    }
+}
+
+impl<T> From<T> for DomainParam
+where
+    T: AsRef<[Domain]> + IntoIterator<Item=Domain>,
+{
+    fn from(doms: T) -> Self {
+        let mut out: u16 = 0;
+        let joined_doms = doms.into_iter()
+            .map(String::from)
+            .collect::<Vec<String>>()
+            .join(",");
+
+        let dom_str = CString::new(joined_doms)
+            .unwrap_or_else(|_| panic!("couldn't make CString from Domains"));
+
+        unsafe {
+            let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
+
+            if ret != ReturnCode::Success {
+                panic!(format!("parse_domains failed: {}", ret));
+            }
+        }
+
+        DomainParam(out)
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ReturnCode {
     Success,
