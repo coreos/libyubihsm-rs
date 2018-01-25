@@ -6,6 +6,8 @@ mod yubihsm_sys {
     #![allow(non_camel_case_types)]
     #![allow(non_snake_case)]
     #![allow(dead_code)]
+    #![allow(unknown_lints)]
+    #![allow(clippy)]
 
     include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
