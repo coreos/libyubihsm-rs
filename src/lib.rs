@@ -21,3 +21,6 @@ pub use types::*;
 pub use yubihsm::*;
 pub use connector::*;
 pub use session::*;
+
+// Re-exports from the bindgen bindings
+pub use yubihsm_sys::yh_capabilities;

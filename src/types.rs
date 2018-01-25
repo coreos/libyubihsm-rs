@@ -1,6 +1,6 @@
 use yubihsm_sys::*;
 
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -311,6 +311,153 @@ impl From<Algorithm> for yh_algorithm {
             Algorithm::YubicoAesAuth => yh_algorithm_YH_ALGO_YUBICO_AES_AUTH,
             Algorithm::EcEd25519 => yh_algorithm_YH_ALGO_EC_ED25519,
         }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Capability {
+    GetOpaque,
+    PutOpaque,
+    PutAuthKey,
+    PutAsymmetric,
+    AsymmetricGen,
+    AsymmetricSignPkcs,
+    AsymmetricSignPss,
+    AsymmetricSignEcdsa,
+    AsymmetricSignEddsa,
+    AsymmetricDecryptPkcs,
+    AsymmetricDecryptOaep,
+    AsymmetricDecryptEcdh,
+    ExportWrapped,
+    ImportWrapped,
+    PutWrapkey,
+    GenerateWrapkey,
+    ExportUnderWrap,
+    PutOption,
+    GetOption,
+    GetRandomness,
+    PutHmackey,
+    HmackeyGenerate,
+    HmacData,
+    HmacVerify,
+    Audit,
+    SshCertify,
+    GetTemplate,
+    PutTemplate,
+    Reset,
+    OtpDecrypt,
+    OtpAeadCreate,
+    OtpAeadRandom,
+    OtpAeadRewrapFrom,
+    OtpAeadRewrapTo,
+    Attest,
+    PutOtpAeadKey,
+    GenerateOtpAeadKey,
+    WrapData,
+    UnwrapData,
+    DeleteOpaque,
+    DeleteAuthkey,
+    DeleteAsymmetric,
+    DeleteWrapKey,
+    DeleteHmacKey,
+    DeleteTemplate,
+    DeleteOtpAeadKey,
+}
+
+impl From<Capability> for String {
+    fn from(cap: Capability) -> Self {
+        match cap {
+            Capability::GetOpaque => String::from("get_opaque"),
+            Capability::PutOpaque => String::from("put_opaque"),
+            Capability::PutAuthKey => String::from("put_authkey"),
+            Capability::PutAsymmetric => String::from("put_asymmetric"),
+            Capability::AsymmetricGen => String::from("asymmetric_gen"),
+            Capability::AsymmetricSignPkcs => String::from("asymmetric_sign_pkcs"),
+            Capability::AsymmetricSignPss => String::from("asymmetric_sign_pss"),
+            Capability::AsymmetricSignEcdsa => String::from("asymmetric_sign_ecdsa"),
+            Capability::AsymmetricSignEddsa => String::from("asymmetric_sign_eddsa"),
+            Capability::AsymmetricDecryptPkcs => String::from("asymmetric_decrypt_pkcs"),
+            Capability::AsymmetricDecryptOaep => String::from("asymmetric_decrypt_oaep"),
+            Capability::AsymmetricDecryptEcdh => String::from("asymmetric_decrypt_ecdh"),
+            Capability::ExportWrapped => String::from("export_wrapped"),
+            Capability::ImportWrapped => String::from("import_wrapped"),
+            Capability::PutWrapkey => String::from("put_wrapkey"),
+            Capability::GenerateWrapkey => String::from("generate_wrapkey"),
+            Capability::ExportUnderWrap => String::from("export_under_wrap"),
+            Capability::PutOption => String::from("put_option"),
+            Capability::GetOption => String::from("get_option"),
+            Capability::GetRandomness => String::from("get_randomness"),
+            Capability::PutHmackey => String::from("put_hmackey"),
+            Capability::HmackeyGenerate => String::from("hmackey_generate"),
+            Capability::HmacData => String::from("hmac_data"),
+            Capability::HmacVerify => String::from("hmac_verify"),
+            Capability::Audit => String::from("audit"),
+            Capability::SshCertify => String::from("ssh_certify"),
+            Capability::GetTemplate => String::from("get_template"),
+            Capability::PutTemplate => String::from("put_template"),
+            Capability::Reset => String::from("reset"),
+            Capability::OtpDecrypt => String::from("otp_decrypt"),
+            Capability::OtpAeadCreate => String::from("otp_aead_create"),
+            Capability::OtpAeadRandom => String::from("otp_aead_random"),
+            Capability::OtpAeadRewrapFrom => String::from("otp_aead_rewrap_from"),
+            Capability::OtpAeadRewrapTo => String::from("otp_aead_rewrap_to"),
+            Capability::Attest => String::from("attest"),
+            Capability::PutOtpAeadKey => String::from("put_otp_aead_key"),
+            Capability::GenerateOtpAeadKey => String::from("generate_otp_aead_key"),
+            Capability::WrapData => String::from("wrap_data"),
+            Capability::UnwrapData => String::from("unwrap_data"),
+            Capability::DeleteOpaque => String::from("delete_opaque"),
+            Capability::DeleteAuthkey => String::from("delete_authkey"),
+            Capability::DeleteAsymmetric => String::from("delete_asymmetric"),
+            Capability::DeleteWrapKey => String::from("delete_wrap_key"),
+            Capability::DeleteHmacKey => String::from("delete_hmac_key"),
+            Capability::DeleteTemplate => String::from("delete_template"),
+            Capability::DeleteOtpAeadKey => String::from("delete_otp_aead_key"),
+        }
+    }
+}
+
+impl From<Capability> for yh_capabilities {
+    fn from(cap: Capability) -> Self {
+        let cap_str = CString::new(String::from(cap)).unwrap();
+        let mut capability = yh_capabilities {
+            capabilities: [0; 8],
+        };
+
+        unsafe {
+            let ret = ReturnCode::from(yh_capabilities_to_num(cap_str.as_ptr(), &mut capability));
+
+            if ret != ReturnCode::Success {
+                panic!(format!("capabilities_to_num failed: {}", ret));
+            }
+        }
+
+        capability
+    }
+}
+
+impl From<Vec<Capability>> for yh_capabilities {
+    fn from(caps: Vec<Capability>) -> Self {
+        let joined_caps = caps
+            .into_iter()
+            .map(String::from)
+            .collect::<Vec<_>>()
+            .join(",");
+
+        let cap_str = CString::new(joined_caps).unwrap();
+        let mut capability = yh_capabilities {
+            capabilities: [0; 8],
+        };
+
+        unsafe {
+            let ret = ReturnCode::from(yh_capabilities_to_num(cap_str.as_ptr(), &mut capability));
+
+            if ret != ReturnCode::Success {
+                panic!(format!("capabilities_to_num failed: {}", ret));
+            }
+        }
+
+        capability
     }
 }
 
