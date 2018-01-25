@@ -436,12 +436,15 @@ impl From<Capability> for yh_capabilities {
     }
 }
 
-impl From<Vec<Capability>> for yh_capabilities {
-    fn from(caps: Vec<Capability>) -> Self {
-        let joined_caps = caps
-            .into_iter()
-            .map(String::from)
-            .collect::<Vec<_>>()
+impl<T> From<T> for yh_capabilities
+where
+    T: AsRef<[Capability]> + IntoIterator,
+    String: From<<T as IntoIterator>::Item>,
+{
+    fn from(caps: T) -> Self {
+        let joined_caps = caps.into_iter()
+            .map(|c| c.into())
+            .collect::<Vec<String>>()
             .join(",");
 
         let cap_str = CString::new(joined_caps).unwrap();
