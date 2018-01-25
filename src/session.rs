@@ -248,6 +248,40 @@ impl Session {
             }
         }
     }
+
+    pub fn create_authkey(
+        &self,
+        key_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        delegated_capabilities: &[Capability],
+        password: &str,
+    ) -> Result<()> {
+        let mut key_id_ptr = key_id;
+        let c_label = CString::new(label)?;
+        let c_pass = CString::new(password)?;
+        let c_pass_slice = c_pass.as_bytes();
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_delegated_caps = yh_capabilities::from(Vec::from(delegated_capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_import_authkey(
+                self.this.get(),
+                &mut key_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                &lib_delegated_caps,
+                c_pass_slice.as_ptr(),
+                c_pass_slice.len(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!(format!("util_import_authkey failed: {}", e)),
+            }
+        }
+    }
 }
 
 impl Drop for Session {
