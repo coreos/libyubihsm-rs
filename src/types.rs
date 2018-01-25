@@ -14,6 +14,12 @@ impl From<Domain> for String {
     }
 }
 
+impl<'a> From<&'a str> for Domain {
+    fn from(s: &str) -> Self {
+        Domain(s.parse::<u8>().unwrap())
+    }
+}
+
 impl From<Domain> for DomainParam {
     fn from(dom: Domain) -> Self {
         let mut out: u16 = 0;
@@ -55,6 +61,30 @@ where
         }
 
         DomainParam(out)
+    }
+}
+
+impl From<DomainParam> for Vec<Domain> {
+    fn from(dom_param: DomainParam) -> Self {
+        let cstring_contents: Vec<u8> = Vec::with_capacity(40);
+        let mut out = Vec::new();
+
+        unsafe {
+            let raw_cstring = CString::from_vec_unchecked(cstring_contents).into_raw();
+            let ret = ReturnCode::from(yh_domains_to_string(dom_param.0, raw_cstring, 40));
+
+            if ret != ReturnCode::Success {
+                panic!(format!("domains_to_string failed: {}", ret));
+            }
+
+            let cstring = CString::from_raw(raw_cstring);
+
+            for domain in cstring.to_string_lossy().split(':') {
+                out.push(Domain::from(domain))
+            }
+        }
+
+        out
     }
 }
 
