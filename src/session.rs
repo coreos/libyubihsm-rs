@@ -282,6 +282,37 @@ impl Session {
             }
         }
     }
+
+    pub fn put_opaque_object(
+        &self,
+        object_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        algorithm: Algorithm,
+        contents: &[u8],
+    ) -> Result<()> {
+        let mut obj_id_ptr = object_id;
+        let c_label = CString::new(label)?;
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_import_opaque(
+                self.this.get(),
+                &mut obj_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                algorithm.into(),
+                contents.as_ptr(),
+                contents.len(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!(format!("util_import_opaque failed: {}", e)),
+            }
+        }
+    }
 }
 
 impl Drop for Session {
