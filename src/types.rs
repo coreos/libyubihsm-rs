@@ -1,3 +1,5 @@
+use errors::*;
+
 use yubihsm_sys::*;
 
 use std::ffi::{CStr, CString};
@@ -10,15 +12,19 @@ pub(crate) struct DomainParam(pub(crate) u16);
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Domain(pub(crate) u8);
 
-impl From<Domain> for String {
-    fn from(dom: Domain) -> Self {
-        format!("{}", dom.0)
+impl Domain {
+    pub fn new(domain: u8) -> Result<Domain> {
+        if domain < 1 || domain > 16 {
+            bail!("invalid domain");
+        }
+
+        Ok(Domain(domain))
     }
 }
 
-impl<'a> From<&'a str> for Domain {
-    fn from(s: &str) -> Self {
-        Domain(s.parse::<u8>().unwrap())
+impl From<Domain> for String {
+    fn from(dom: Domain) -> Self {
+        format!("{}", dom.0)
     }
 }
 
@@ -69,7 +75,6 @@ where
 impl From<DomainParam> for Vec<Domain> {
     fn from(dom_param: DomainParam) -> Self {
         let cstring_contents: Vec<u8> = Vec::with_capacity(40);
-        let mut out = Vec::new();
 
         unsafe {
             let raw_cstring = CString::from_vec_unchecked(cstring_contents).into_raw();
@@ -81,12 +86,15 @@ impl From<DomainParam> for Vec<Domain> {
 
             let cstring = CString::from_raw(raw_cstring);
 
-            for domain in cstring.to_string_lossy().split(':') {
-                out.push(Domain::from(domain))
-            }
+            // If libyubihsm is giving us back invalid domains, there's not much we can do about
+            // it, so unwrapping is okay here.
+            cstring
+                .to_string_lossy()
+                .split(':')
+                .map(|d| d.parse::<u8>().unwrap())
+                .map(|d| Domain::new(d).unwrap())
+                .collect()
         }
-
-        out
     }
 }
 
