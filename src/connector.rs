@@ -1,7 +1,7 @@
-use errors::*;
 use types::*;
 use session::Session;
 
+use failure::Error;
 use yubihsm_sys::{self, yh_algorithm, yh_connector, yh_session, YH_CONTEXT_LEN,
                   YH_MAX_ALGORITHM_COUNT};
 
@@ -23,14 +23,14 @@ impl Connector {
         }
     }
 
-    pub fn connect(&self) -> Result<()> {
+    pub fn connect(&self) -> Result<(), Error> {
         let mut this = self.this.get();
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_connect_best(&mut this, 1, ptr::null_mut()));
 
             if ret != ReturnCode::Success {
-                bail!(format!("failed to connect: {}", ret));
+                return Err(format_err!("failed to connect: {}", ret));
             }
         }
 
@@ -46,7 +46,7 @@ impl Connector {
         auth_key_id: u16,
         password: &str,
         recreate_session: bool,
-    ) -> Result<Session> {
+    ) -> Result<Session, Error> {
         if !self.connected.get() {
             bail!("tried to use unconnected connector");
         }
@@ -70,7 +70,7 @@ impl Connector {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("failed to create session: {}", ret));
+                return Err(format_err!("failed to create session: {}", ret));
             }
 
             context.set_len(YH_CONTEXT_LEN as usize);
@@ -82,14 +82,14 @@ impl Connector {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("failed to authenticate session: {}", ret));
+                return Err(format_err!("failed to authenticate session: {}", ret));
             }
         }
 
         Ok(Session::new(session_ptr))
     }
 
-    pub fn get_device_info(&self) -> Result<DeviceInfo> {
+    pub fn get_device_info(&self) -> Result<DeviceInfo, Error> {
         let mut major: u8 = 0;
         let mut minor: u8 = 0;
         let mut patch: u8 = 0;
@@ -113,7 +113,7 @@ impl Connector {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("failed to get device info: {}", ret));
+                return Err(format_err!("failed to get device info: {}", ret));
             }
 
             algorithms.set_len(algorithm_count);

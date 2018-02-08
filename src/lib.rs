@@ -1,5 +1,5 @@
 #[macro_use]
-extern crate error_chain;
+extern crate failure;
 
 mod yubihsm_sys {
     #![allow(non_upper_case_globals)]
@@ -12,7 +12,6 @@ mod yubihsm_sys {
     include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
 
-mod errors;
 mod types;
 mod yubihsm;
 mod connector;
@@ -20,7 +19,6 @@ mod session;
 #[cfg(test)]
 mod tests;
 
-pub use errors::*;
 pub use types::*;
 pub use yubihsm::*;
 pub use connector::*;

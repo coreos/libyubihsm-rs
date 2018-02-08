@@ -1,5 +1,4 @@
-use errors::*;
-
+use failure::Error;
 use yubihsm_sys::*;
 
 use std::ffi::{CStr, CString};
@@ -13,9 +12,9 @@ pub(crate) struct DomainParam(pub(crate) u16);
 pub struct Domain(pub(crate) u8);
 
 impl Domain {
-    pub fn new(domain: u8) -> Result<Domain> {
+    pub fn new(domain: u8) -> Result<Domain, Error> {
         if domain < 1 || domain > 16 {
-            bail!("invalid domain");
+            return Err(format_err!("invalid domain"));
         }
 
         Ok(Domain(domain))
@@ -38,7 +37,7 @@ impl From<Domain> for DomainParam {
             let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
 
             if ret != ReturnCode::Success {
-                panic!(format!("parse_domains failed: {}", ret));
+                panic!("parse_domains failed: {}", ret);
             }
         }
 
@@ -64,7 +63,7 @@ where
             let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
 
             if ret != ReturnCode::Success {
-                panic!(format!("parse_domains failed: {}", ret));
+                panic!("parse_domains failed: {}", ret);
             }
         }
 
@@ -81,7 +80,7 @@ impl From<DomainParam> for Vec<Domain> {
             let ret = ReturnCode::from(yh_domains_to_string(dom_param.0, raw_cstring, 40));
 
             if ret != ReturnCode::Success {
-                panic!(format!("domains_to_string failed: {}", ret));
+                panic!("domains_to_string failed: {}", ret);
             }
 
             let cstring = CString::from_raw(raw_cstring);
@@ -166,7 +165,7 @@ impl From<yh_rc> for ReturnCode {
             yh_rc_YHR_GENERIC_ERROR => ReturnCode::GenericError,
             yh_rc_YHR_DEVICE_OBJECT_EXISTS => ReturnCode::DeviceObjectExists,
             yh_rc_YHR_CONNECTOR_ERROR => ReturnCode::ConnectorError,
-            _ => panic!(format!("unexpected return code: {}", rc)),
+            _ => panic!("unexpected return code: {}", rc),
         }
     }
 }
@@ -242,7 +241,7 @@ impl From<yh_object_type> for ObjectType {
             yh_object_type_YH_PUBLIC => ObjectType::Public,
             yh_object_type_YH_TEMPLATE => ObjectType::Template,
             yh_object_type_YH_WRAPKEY => ObjectType::WrapKey,
-            _ => panic!(format!("unexpected object type: {}", obj)),
+            _ => panic!("unexpected object type: {}", obj),
         }
     }
 }
@@ -349,7 +348,7 @@ impl From<yh_algorithm> for Algorithm {
             yh_algorithm_YH_ALGO_YUBICO_OTP_AES256 => Algorithm::YubicoOtpAes256,
             yh_algorithm_YH_ALGO_YUBICO_AES_AUTH => Algorithm::YubicoAesAuth,
             yh_algorithm_YH_ALGO_EC_ED25519 => Algorithm::EcEd25519,
-            _ => panic!(format!("unexpected algorithm type: {}", alg)),
+            _ => panic!("unexpected algorithm type: {}", alg),
         }
     }
 }
@@ -523,7 +522,7 @@ impl From<Capability> for yh_capabilities {
             let ret = ReturnCode::from(yh_capabilities_to_num(cap_str.as_ptr(), &mut capability));
 
             if ret != ReturnCode::Success {
-                panic!(format!("capabilities_to_num failed: {}", ret));
+                panic!("capabilities_to_num failed: {}", ret);
             }
         }
 
@@ -550,7 +549,7 @@ where
             let ret = ReturnCode::from(yh_capabilities_to_num(cap_str.as_ptr(), &mut capability));
 
             if ret != ReturnCode::Success {
-                panic!(format!("capabilities_to_num failed: {}", ret));
+                panic!("capabilities_to_num failed: {}", ret);
             }
         }
 
