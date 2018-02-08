@@ -318,17 +318,8 @@ impl Session {
 impl Drop for Session {
     fn drop(&mut self) {
         unsafe {
-            let rc = ReturnCode::from(yubihsm_sys::yh_util_close_session(self.this.get()));
-
-            if rc != ReturnCode::Success {
-                panic!("failed to close session: {}", rc);
-            }
-
-            let rc = ReturnCode::from(yubihsm_sys::yh_destroy_session(&mut self.this.get()));
-
-            if rc != ReturnCode::Success {
-                panic!("failed to destroy session: {}", rc);
-            }
+            yubihsm_sys::yh_util_close_session(self.this.get());
+            yubihsm_sys::yh_destroy_session(&mut self.this.get());
         }
     }
 }
