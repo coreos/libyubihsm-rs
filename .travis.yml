@@ -1,8 +1,17 @@
+sudo: required
+dist: trusty
+
 language: rust
 rust:
     - stable
     - beta
     - nightly
+
+before_install:
+    - wget https://developers.yubico.com/YubiHSM2/Releases/yubihsm2-sdk-1.0.1-ubuntu1404-amd64.tar.gz
+    - tar -xf yubihsm2-sdk-1.0.1-ubuntu1404-amd64.tar.gz
+    - sudo dpkg -i yubihsm2-sdk/libyubihsm1_1.0.1-1_amd64.deb
+    - sudo dpkg -i yubihsm2-sdk/libyubihsm-dev_1.0.1-1_amd64.deb
 
 matrix:
     allow_failures:
