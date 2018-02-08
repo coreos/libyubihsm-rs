@@ -6,8 +6,8 @@ fn domain_to_string() {
 }
 
 #[test]
-fn string_to_domain() {
-    assert_eq!(Domain(1), Domain::from("1"));
+fn new_domain() {
+    assert_eq!(Domain(1), Domain::new(1).unwrap());
 }
 
 #[test]
