@@ -1,7 +1,7 @@
-use errors::*;
 use connector::Connector;
 use types::*;
 
+use failure::Error;
 use yubihsm_sys::{self, yh_connector, yh_rc, yh_rc_YHR_SUCCESS};
 
 use std::ffi::CString;
@@ -19,7 +19,7 @@ pub struct Yubihsm {
 }
 
 impl Yubihsm {
-    pub fn new() -> Result<Self> {
+    pub fn new() -> Result<Self, Error> {
         let mut ret: yh_rc = yh_rc_YHR_SUCCESS;
 
         LIBYUBIHSM_INIT.call_once(|| unsafe {
@@ -27,7 +27,7 @@ impl Yubihsm {
         });
 
         if ret != yh_rc_YHR_SUCCESS {
-            bail!(format!("yh_init returned {}", ret));
+            return Err(format_err!("yh_init returned {}", ret));
         }
 
         Ok(Yubihsm {
@@ -35,7 +35,7 @@ impl Yubihsm {
         })
     }
 
-    pub fn create_connector(&self, url: &str) -> Result<Connector> {
+    pub fn create_connector(&self, url: &str) -> Result<Connector, Error> {
         let url_c = CString::new(url)?;
         let mut connector_ptr: *mut yh_connector = ptr::null_mut();
 
@@ -46,7 +46,7 @@ impl Yubihsm {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("couldn't create connector: {}", ret));
+                return Err(format_err!("couldn't create connector: {}", ret));
             }
         }
 

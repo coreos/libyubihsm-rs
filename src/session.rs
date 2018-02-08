@@ -1,6 +1,6 @@
-use errors::*;
 use types::*;
 
+use failure::Error;
 use yubihsm_sys::{self, yh_capabilities, yh_session};
 
 use std::cell::Cell;
@@ -15,7 +15,7 @@ macro_rules! generate_key {
             domains: &[Domain],
             capabilities: &[Capability],
             algorithm: Algorithm
-        ) -> Result<()> {
+        ) -> Result<(), Error> {
             let mut key_id_ptr = key_id;
             let c_label = CString::new(label)?;
             let lib_domains = DomainParam::from(Vec::from(domains));
@@ -31,7 +31,7 @@ macro_rules! generate_key {
                     algorithm.into(),
                 )) {
                     ReturnCode::Success => Ok(()),
-                    e => bail!(format!("$name failed: {}", e)),
+                    e => Err(format_err!("$name failed: {}", e)),
                 }
             }
         }
@@ -54,7 +54,7 @@ impl Session {
         }
     }
 
-    pub fn get_random(&self, len: usize) -> Result<Vec<u8>> {
+    pub fn get_random(&self, len: usize) -> Result<Vec<u8>, Error> {
         let mut out: Vec<u8> = Vec::with_capacity(len);
         let mut out_size: usize = len;
 
@@ -67,11 +67,11 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("yh_util_get_random failed: {}", ret));
+                return Err(format_err!("yh_util_get_random failed: {}", ret));
             }
 
             if out_size != len {
-                bail!("data sizes didn't match");
+                return Err(format_err!("data sizes didn't match"));
             }
 
             out.set_len(out_size);
@@ -80,7 +80,7 @@ impl Session {
         Ok(out)
     }
 
-    pub fn sign_ecdsa<T: AsRef<[u8]>>(&self, key_id: u16, data: T) -> Result<Vec<u8>> {
+    pub fn sign_ecdsa<T: AsRef<[u8]>>(&self, key_id: u16, data: T) -> Result<Vec<u8>, Error> {
         // The libyubihsm documentation makes no mention of how large this buffer should be, and
         // there don't appear to be any constants related to signature size, so this is just a
         // rough guess.
@@ -100,7 +100,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("couldn't sign_ecdsa: {}", ret));
+                return Err(format_err!("couldn't sign_ecdsa: {}", ret));
             }
 
             out.set_len(out_size);
@@ -109,7 +109,7 @@ impl Session {
         Ok(out)
     }
 
-    pub fn sign_eddsa<T: AsRef<[u8]>>(&self, key_id: u16, data: T) -> Result<Vec<u8>> {
+    pub fn sign_eddsa<T: AsRef<[u8]>>(&self, key_id: u16, data: T) -> Result<Vec<u8>, Error> {
         // The libyubihsm documentation makes no mention of how large this buffer should be, and
         // there don't appear to be any constants related to signature size, so this is just a
         // rough guess.
@@ -129,7 +129,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("couldn't sign_eddsa: {}", ret));
+                return Err(format_err!("couldn't sign_eddsa: {}", ret));
             }
 
             out.set_len(out_size);
@@ -143,7 +143,7 @@ impl Session {
         key_id: u16,
         hashed: bool,
         data: T,
-    ) -> Result<Vec<u8>> {
+    ) -> Result<Vec<u8>, Error> {
         // The libyubihsm documentation makes no mention of how large this buffer should be, and
         // there don't appear to be any constants related to signature size, so this is just a
         // rough guess.
@@ -164,7 +164,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("couldn't sign_pkcs1v1_5: {}", ret));
+                return Err(format_err!("couldn't sign_pkcs1v1_5: {}", ret));
             }
 
             out.set_len(out_size);
@@ -179,7 +179,7 @@ impl Session {
         salt_len: usize,
         mgf1_algorithm: Algorithm,
         data: T,
-    ) -> Result<Vec<u8>> {
+    ) -> Result<Vec<u8>, Error> {
         // The libyubihsm documentation makes no mention of how large this buffer should be, and
         // there don't appear to be any constants related to signature size, so this is just a
         // rough guess.
@@ -201,7 +201,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                bail!(format!("couldn't sign_pss: {}", ret));
+                return Err(format_err!("couldn't sign_pss: {}", ret));
             }
 
             out.set_len(out_size);
@@ -226,7 +226,7 @@ impl Session {
         capabilities: &[Capability],
         delegated_capabilities: &[Capability],
         algorithm: Algorithm,
-    ) -> Result<()> {
+    ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
         let lib_domains = DomainParam::from(Vec::from(domains));
@@ -244,7 +244,7 @@ impl Session {
                 &lib_delegated_caps,
             )) {
                 ReturnCode::Success => Ok(()),
-                e => bail!(format!("generate_key_wrap failed: {}", e)),
+                e => Err(format_err!("generate_key_wrap failed: {}", e)),
             }
         }
     }
@@ -257,7 +257,7 @@ impl Session {
         capabilities: &[Capability],
         delegated_capabilities: &[Capability],
         password: &str,
-    ) -> Result<()> {
+    ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
         let c_pass = CString::new(password)?;
@@ -278,7 +278,7 @@ impl Session {
                 c_pass_slice.len(),
             )) {
                 ReturnCode::Success => Ok(()),
-                e => bail!(format!("util_import_authkey failed: {}", e)),
+                e => Err(format_err!("util_import_authkey failed: {}", e)),
             }
         }
     }
@@ -291,7 +291,7 @@ impl Session {
         capabilities: &[Capability],
         algorithm: Algorithm,
         contents: &[u8],
-    ) -> Result<()> {
+    ) -> Result<(), Error> {
         let mut obj_id_ptr = object_id;
         let c_label = CString::new(label)?;
         let lib_domains = DomainParam::from(Vec::from(domains));
@@ -309,7 +309,7 @@ impl Session {
                 contents.len(),
             )) {
                 ReturnCode::Success => Ok(()),
-                e => bail!(format!("util_import_opaque failed: {}", e)),
+                e => Err(format_err!("util_import_opaque failed: {}", e)),
             }
         }
     }

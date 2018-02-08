@@ -7,4 +7,4 @@ authors = ["James Forcier <james.forcier@coreos.com>"]
 bindgen = "0.32"
 
 [dependencies]
-error-chain = "0.11"
+failure = "0.1"
