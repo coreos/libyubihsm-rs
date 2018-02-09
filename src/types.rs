@@ -585,3 +585,16 @@ pub struct DeviceInfo {
     pub log_used: u8,
     pub algorithms: Vec<Algorithm>,
 }
+
+/// The public component of an asymmetric key stored on the device.
+///
+/// The contents of each variant correspond to the component(s) necessary to represent a public key
+/// using that algorithm. For RSA, the contents are the public modulus `n`. For ECC, the first
+/// component is the public point `x`, and the second component is the public point `y`. For EDC,
+/// the contents are the public point `a` (compressed, per the Yubico documentation).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum PublicKey {
+    Rsa(Vec<u8>),
+    Ecc(Vec<u8>, Vec<u8>),
+    Edc(Vec<u8>),
+}
