@@ -14,7 +14,7 @@ pub struct Domain(pub(crate) u8);
 impl Domain {
     pub fn new(domain: u8) -> Result<Domain, Error> {
         if domain < 1 || domain > 16 {
-            return Err(format_err!("invalid domain"));
+            bail!("invalid domain");
         }
 
         Ok(Domain(domain))

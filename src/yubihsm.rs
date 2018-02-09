@@ -27,7 +27,7 @@ impl Yubihsm {
         });
 
         if ret != yh_rc_YHR_SUCCESS {
-            return Err(format_err!("yh_init returned {}", ret));
+            bail!("yh_init returned {}", ret);
         }
 
         Ok(Yubihsm {
@@ -46,7 +46,7 @@ impl Yubihsm {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("couldn't create connector: {}", ret));
+                bail!("couldn't create connector: {}", ret);
             }
         }
 

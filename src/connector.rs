@@ -30,7 +30,7 @@ impl Connector {
             let ret = ReturnCode::from(yubihsm_sys::yh_connect_best(&mut this, 1, ptr::null_mut()));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("failed to connect: {}", ret));
+                bail!("failed to connect: {}", ret);
             }
         }
 
@@ -70,7 +70,7 @@ impl Connector {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("failed to create session: {}", ret));
+                bail!("failed to create session: {}", ret);
             }
 
             context.set_len(YH_CONTEXT_LEN as usize);
@@ -82,7 +82,7 @@ impl Connector {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("failed to authenticate session: {}", ret));
+                bail!("failed to authenticate session: {}", ret);
             }
         }
 
@@ -113,7 +113,7 @@ impl Connector {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("failed to get device info: {}", ret));
+                bail!("failed to get device info: {}", ret);
             }
 
             algorithms.set_len(algorithm_count);

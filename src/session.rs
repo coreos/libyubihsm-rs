@@ -67,11 +67,11 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("yh_util_get_random failed: {}", ret));
+                bail!("yh_util_get_random failed: {}", ret);
             }
 
             if out_size != len {
-                return Err(format_err!("data sizes didn't match"));
+                bail!("data sizes didn't match");
             }
 
             out.set_len(out_size);
@@ -100,7 +100,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("couldn't sign_ecdsa: {}", ret));
+                bail!("couldn't sign_ecdsa: {}", ret);
             }
 
             out.set_len(out_size);
@@ -129,7 +129,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("couldn't sign_eddsa: {}", ret));
+                bail!("couldn't sign_eddsa: {}", ret);
             }
 
             out.set_len(out_size);
@@ -164,7 +164,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("couldn't sign_pkcs1v1_5: {}", ret));
+                bail!("couldn't sign_pkcs1v1_5: {}", ret);
             }
 
             out.set_len(out_size);
@@ -201,7 +201,7 @@ impl Session {
             ));
 
             if ret != ReturnCode::Success {
-                return Err(format_err!("couldn't sign_pss: {}", ret));
+                bail!("couldn't sign_pss: {}", ret);
             }
 
             out.set_len(out_size);
