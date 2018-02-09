@@ -248,6 +248,22 @@ impl From<yh_object_type> for ObjectType {
     }
 }
 
+#[allow(non_upper_case_globals)]
+impl From<ObjectType> for yh_object_type {
+    fn from(obj: ObjectType) -> Self {
+        match obj {
+            ObjectType::Asymmetric => yh_object_type_YH_ASYMMETRIC,
+            ObjectType::AuthKey => yh_object_type_YH_AUTHKEY,
+            ObjectType::HmacKey => yh_object_type_YH_HMACKEY,
+            ObjectType::Opaque => yh_object_type_YH_OPAQUE,
+            ObjectType::OtpAeadKey => yh_object_type_YH_OTP_AEAD_KEY,
+            ObjectType::Public => yh_object_type_YH_PUBLIC,
+            ObjectType::Template => yh_object_type_YH_TEMPLATE,
+            ObjectType::WrapKey => yh_object_type_YH_WRAPKEY,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Algorithm {
     RsaPkcs1Sha1,
