@@ -3,6 +3,8 @@ use yubihsm_sys::*;
 
 use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
+use std::os::raw::c_char;
+use std::ptr;
 
 /// Wrapper struct for "encoded" Domains. This is the type expected by libyubihsm functions.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -404,6 +406,22 @@ impl From<Algorithm> for yh_algorithm {
             Algorithm::YubicoOtpAes256 => yh_algorithm_YH_ALGO_YUBICO_OTP_AES256,
             Algorithm::YubicoAesAuth => yh_algorithm_YH_ALGO_YUBICO_AES_AUTH,
             Algorithm::EcEd25519 => yh_algorithm_YH_ALGO_EC_ED25519,
+        }
+    }
+}
+
+impl Display for Algorithm {
+    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+        let mut string_ptr: *const c_char = ptr::null();
+
+        unsafe {
+            match ReturnCode::from(yh_algo_to_string((*self).into(), &mut string_ptr)) {
+                ReturnCode::Success => {
+                    let algo = CStr::from_ptr(string_ptr);
+                    write!(f, "{}", algo.to_string_lossy())
+                }
+                _ => Err(::std::fmt::Error),
+            }
         }
     }
 }
