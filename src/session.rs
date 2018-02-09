@@ -313,6 +313,56 @@ impl Session {
             }
         }
     }
+
+    pub fn get_pubkey(&self, key_id: u16) -> Result<PublicKey, Error> {
+        // Per the Yubico documentation, the largest type of data is a public key for a 4096-bit
+        // RSA key, which is 0x400 bytes long.
+        // https://developers.yubico.com/YubiHSM2/Commands/Get_Pubkey.html
+
+        let mut data: Vec<u8> = Vec::with_capacity(0x400);
+        let mut data_length = data.capacity();
+        let mut algorithm = 0;
+
+        let rc = unsafe {
+            ReturnCode::from(yubihsm_sys::yh_util_get_pubkey(
+                self.this.get(),
+                key_id,
+                data.as_mut_ptr(),
+                &mut data_length,
+                &mut algorithm,
+            ))
+        };
+
+        if rc != ReturnCode::Success {
+            bail!("util_get_pubkey failed: {}", rc);
+        }
+
+        unsafe { data.set_len(data_length) };
+        data.shrink_to_fit();
+
+        match Algorithm::from(algorithm) {
+            Algorithm::Rsa2048 | Algorithm::Rsa3072 | Algorithm::Rsa4096 => {
+                Ok(PublicKey::Rsa(data))
+            }
+            Algorithm::EcP224
+            | Algorithm::EcP256
+            | Algorithm::EcP384
+            | Algorithm::EcP521
+            | Algorithm::EcK256
+            | Algorithm::EcBp256
+            | Algorithm::EcBp384
+            | Algorithm::EcBp512 => {
+                // Yubico documentation claims `data` contains points X and Y here, so we'll trust
+                // it and split down the middle.
+                let split_point = data.len() / 2;
+                let point_y = data.split_off(split_point);
+
+                Ok(PublicKey::Ecc(data, point_y))
+            }
+            Algorithm::EcEd25519 => Ok(PublicKey::Edc(data)),
+            a => bail!("get_pubkey: unexpected algorithm type {}", a),
+        }
+    }
 }
 
 impl Drop for Session {

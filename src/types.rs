@@ -3,6 +3,8 @@ use yubihsm_sys::*;
 
 use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
+use std::os::raw::c_char;
+use std::ptr;
 
 /// Wrapper struct for "encoded" Domains. This is the type expected by libyubihsm functions.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -408,6 +410,22 @@ impl From<Algorithm> for yh_algorithm {
     }
 }
 
+impl Display for Algorithm {
+    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+        let mut string_ptr: *const c_char = ptr::null();
+
+        unsafe {
+            match ReturnCode::from(yh_algo_to_string((*self).into(), &mut string_ptr)) {
+                ReturnCode::Success => {
+                    let algo = CStr::from_ptr(string_ptr);
+                    write!(f, "{}", algo.to_string_lossy())
+                }
+                _ => Err(::std::fmt::Error),
+            }
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Capability {
     GetOpaque,
@@ -566,4 +584,17 @@ pub struct DeviceInfo {
     pub log_capacity: u8,
     pub log_used: u8,
     pub algorithms: Vec<Algorithm>,
+}
+
+/// The public component of an asymmetric key stored on the device.
+///
+/// The contents of each variant correspond to the component(s) necessary to represent a public key
+/// using that algorithm. For RSA, the contents are the public modulus `n`. For ECC, the first
+/// component is the public point `x`, and the second component is the public point `y`. For EDC,
+/// the contents are the public point `a` (compressed, per the Yubico documentation).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum PublicKey {
+    Rsa(Vec<u8>),
+    Ecc(Vec<u8>, Vec<u8>),
+    Edc(Vec<u8>),
 }
