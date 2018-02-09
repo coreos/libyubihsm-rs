@@ -1,4 +1,4 @@
-yubihsm-rs
+yubihsm-rs [![Build Status](https://travis-ci.org/coreos/yubihsm-rs.svg?branch=master)](https://travis-ci.org/coreos/yubihsm-rs)
 ==========
 Rust library for interfacing with the YubiHSM2.
 
