@@ -212,9 +212,42 @@ impl From<ReturnCode> for yh_rc {
 
 impl Display for ReturnCode {
     fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+        let error_name = match *self {
+            ReturnCode::Success => "Success",
+            ReturnCode::Memory => "Memory",
+            ReturnCode::InitError => "InitError",
+            ReturnCode::NetError => "NetError",
+            ReturnCode::ConnectorNotFound => "ConnectorNotFound",
+            ReturnCode::InvalidParams => "InvalidParams",
+            ReturnCode::WrongLength => "WrongLength",
+            ReturnCode::BufferTooSmall => "BufferTooSmall",
+            ReturnCode::CryptogramMismatch => "CryptogramMismatch",
+            ReturnCode::AuthSessionError => "AuthSessionError",
+            ReturnCode::MacMismatch => "MacMismatch",
+            ReturnCode::DeviceOk => "DeviceOk",
+            ReturnCode::DeviceInvCommand => "DeviceInvCommand",
+            ReturnCode::DeviceInvData => "DeviceInvData",
+            ReturnCode::DeviceInvSession => "DeviceInvSession",
+            ReturnCode::DeviceAuthFail => "DeviceAuthFail",
+            ReturnCode::DeviceSessionsFull => "DeviceSessionsFull",
+            ReturnCode::DeviceSessionFailed => "DeviceSessionFailed",
+            ReturnCode::DeviceStorageFailed => "DeviceStorageFailed",
+            ReturnCode::DeviceWrongLength => "DeviceWrongLength",
+            ReturnCode::DeviceInvPermission => "DeviceInvPermission",
+            ReturnCode::DeviceLogFull => "DeviceLogFull",
+            ReturnCode::DeviceObjNotFound => "DeviceObjNotFound",
+            ReturnCode::DeviceIdIllegal => "DeviceIdIllegal",
+            ReturnCode::DeviceInvalidOtp => "DeviceInvalidOtp",
+            ReturnCode::DeviceDemoMode => "DeviceDemoMode",
+            ReturnCode::DeviceCmdUnexecuted => "DeviceCmdUnexecuted",
+            ReturnCode::GenericError => "GenericError",
+            ReturnCode::DeviceObjectExists => "DeviceObjectExists",
+            ReturnCode::ConnectorError => "ConnectorError",
+        };
+
         unsafe {
             let error = CStr::from_ptr(yh_strerror(yh_rc::from(*self)));
-            write!(f, "{}", error.to_string_lossy())
+            write!(f, "{} (ReturnCode::{})", error.to_string_lossy(), error_name)
         }
     }
 }
