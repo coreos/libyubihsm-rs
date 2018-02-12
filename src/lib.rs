@@ -1,3 +1,5 @@
+#![allow(unknown_lints)]
+
 #[macro_use]
 extern crate failure;
 
