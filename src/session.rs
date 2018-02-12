@@ -54,6 +54,19 @@ impl Session {
         }
     }
 
+    pub fn delete_object(&self, obj_id: u16, obj_type: ObjectType) -> Result<(), Error> {
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_delete_object(
+                self.this.get(),
+                obj_id,
+                obj_type.into(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!("util_delete_object failed: {}", e),
+            }
+        }
+    }
+
     pub fn get_random(&self, len: usize) -> Result<Vec<u8>, Error> {
         let mut out: Vec<u8> = Vec::with_capacity(len);
         let mut out_size: usize = len;
