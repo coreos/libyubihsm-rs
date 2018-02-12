@@ -262,6 +262,167 @@ impl Session {
         }
     }
 
+    pub fn put_key_ec<T: AsRef<[u8]>>(
+        &self,
+        key_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        algorithm: Algorithm,
+        s: T,
+    ) -> Result<(), Error> {
+        let mut key_id_ptr = key_id;
+        let c_label = CString::new(label)?;
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_import_key_ec(
+                self.this.get(),
+                &mut key_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                algorithm.into(),
+                s.as_ref().as_ptr(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!("couldn't import_key_rsa: {}", e),
+            }
+        }
+    }
+
+    pub fn put_key_ed<T: AsRef<[u8]>>(
+        &self,
+        key_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        algorithm: Algorithm,
+        k: T,
+    ) -> Result<(), Error> {
+        let mut key_id_ptr = key_id;
+        let c_label = CString::new(label)?;
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_import_key_ed(
+                self.this.get(),
+                &mut key_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                algorithm.into(),
+                k.as_ref().as_ptr(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!("couldn't import_key_rsa: {}", e),
+            }
+        }
+    }
+
+    pub fn put_key_hmac<T: AsRef<[u8]>>(
+        &self,
+        key_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        algorithm: Algorithm,
+        key: T,
+    ) -> Result<(), Error> {
+        let mut key_id_ptr = key_id;
+        let c_label = CString::new(label)?;
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_import_key_hmac(
+                self.this.get(),
+                &mut key_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                algorithm.into(),
+                key.as_ref().as_ptr(),
+                key.as_ref().len(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!("couldn't import_key_rsa: {}", e),
+            }
+        }
+    }
+
+    // TODO(csssuf): refactor put_key design to properly solve this lint?
+    #[allow(too_many_arguments)]
+    pub fn put_key_rsa<T: AsRef<[u8]>>(
+        &self,
+        key_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        algorithm: Algorithm,
+        p: T,
+        q: T,
+    ) -> Result<(), Error> {
+        let mut key_id_ptr = key_id;
+        let c_label = CString::new(label)?;
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_import_key_rsa(
+                self.this.get(),
+                &mut key_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                algorithm.into(),
+                p.as_ref().as_ptr(),
+                q.as_ref().as_ptr(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!("couldn't import_key_rsa: {}", e),
+            }
+        }
+    }
+
+    // TODO(csssuf): refactor put_key design to properly solve this lint?
+    #[allow(too_many_arguments)]
+    pub fn put_wrapkey<T: AsRef<[u8]>>(
+        &self,
+        key_id: u16,
+        label: &str,
+        domains: &[Domain],
+        capabilities: &[Capability],
+        delegated_capabilities: &[Capability],
+        algorithm: Algorithm,
+        key: T,
+    ) -> Result<(), Error> {
+        let mut key_id_ptr = key_id;
+        let c_label = CString::new(label)?;
+        let lib_domains = DomainParam::from(Vec::from(domains));
+        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_delegated_caps = yh_capabilities::from(Vec::from(delegated_capabilities));
+
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_import_key_wrap(
+                self.this.get(),
+                &mut key_id_ptr,
+                c_label.as_ptr(),
+                lib_domains.0,
+                &lib_caps,
+                algorithm.into(),
+                &lib_delegated_caps,
+                key.as_ref().as_ptr(),
+                key.as_ref().len(),
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!("couldn't import_key_rsa: {}", e),
+            }
+        }
+    }
+
     pub fn create_authkey(
         &self,
         key_id: u16,
