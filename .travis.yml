@@ -13,6 +13,8 @@ before_install:
     - sudo dpkg -i yubihsm2-sdk/libyubihsm1_1.0.1-1_amd64.deb
     - sudo dpkg -i yubihsm2-sdk/libyubihsm-dev_1.0.1-1_amd64.deb
 
+cache: cargo
+
 matrix:
     allow_failures:
         - rust: nightly
