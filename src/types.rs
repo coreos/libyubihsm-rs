@@ -874,3 +874,26 @@ impl From<yh_log_entry> for LogEntry {
         }
     }
 }
+
+impl From<LogEntry> for yh_log_entry {
+    fn from(entry: LogEntry) -> yh_log_entry {
+        let mut digest_vec = entry.digest.clone();
+        if digest_vec.len() < 16 {
+            digest_vec.extend(&[0; 16]);
+        }
+
+        let digest_arr: [u8; 16] = [digest_vec.remove(0); 16];
+
+        yh_log_entry {
+            number: entry.index,
+            command: 0,
+            length: entry.data_length,
+            session_key: entry.session_key,
+            target_key: entry.target_key,
+            second_key: entry.second_key,
+            result: 0,
+            systick: entry.systick,
+            digest: digest_arr,
+        }
+    }
+}

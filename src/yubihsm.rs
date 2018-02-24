@@ -52,4 +52,21 @@ impl Yubihsm {
 
         Ok(Connector::new(connector_ptr))
     }
+
+    pub fn verify_logs<T: AsRef<[LogEntry]>>(
+        &self,
+        logs: T,
+        previous_log: Option<LogEntry>,
+    ) -> bool {
+        let mut logs = Vec::from(logs.as_ref())
+            .into_iter()
+            .map(yubihsm_sys::yh_log_entry::from)
+            .collect::<Vec<_>>();
+        let previous_log = match previous_log {
+            Some(log) => &mut log.clone().into(),
+            None => ptr::null_mut(),
+        };
+
+        unsafe { yubihsm_sys::yh_verify_logs(logs.as_mut_ptr(), logs.len(), previous_log) }
+    }
 }
