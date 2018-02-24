@@ -537,6 +537,37 @@ impl Session {
             a => bail!("get_pubkey: unexpected algorithm type {}", a),
         }
     }
+
+    pub fn get_logs(&self) -> Result<Log, Error> {
+        let mut entries: Vec<yubihsm_sys::yh_log_entry> =
+            Vec::with_capacity(yubihsm_sys::YH_MAX_LOG_ENTRIES as usize);
+        let mut n_entries = entries.capacity();
+        let mut unlogged_boots = 0;
+        let mut unlogged_auths = 0;
+
+        let rc = unsafe {
+            ReturnCode::from(yubihsm_sys::yh_util_get_logs(
+                self.this.get(),
+                &mut unlogged_boots,
+                &mut unlogged_auths,
+                entries.as_mut_ptr(),
+                &mut n_entries,
+            ))
+        };
+
+        if rc != ReturnCode::Success {
+            bail!("util_get_logs failed: {}", rc);
+        }
+
+        unsafe { entries.set_len(n_entries) };
+        entries.shrink_to_fit();
+
+        Ok(Log {
+            unlogged_boots: unlogged_boots,
+            unlogged_auths: unlogged_auths,
+            log_entries: entries.iter().map(LogEntry::from).collect::<Vec<_>>(),
+        })
+    }
 }
 
 impl Drop for Session {
