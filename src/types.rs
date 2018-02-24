@@ -877,12 +877,14 @@ impl From<yh_log_entry> for LogEntry {
 
 impl From<LogEntry> for yh_log_entry {
     fn from(entry: LogEntry) -> yh_log_entry {
+        const DIGEST_SIZE: usize = YH_LOG_DIGEST_SIZE as usize;
+
         let mut digest_vec = entry.digest.clone();
-        if digest_vec.len() < 16 {
-            digest_vec.extend(&[0; 16]);
+        if digest_vec.len() < DIGEST_SIZE {
+            digest_vec.extend(&[0; DIGEST_SIZE]);
         }
 
-        let digest_arr: [u8; 16] = [digest_vec.remove(0); 16];
+        let digest_arr: [u8; DIGEST_SIZE] = [digest_vec.remove(0); DIGEST_SIZE];
 
         yh_log_entry {
             number: entry.index,
