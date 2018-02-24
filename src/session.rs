@@ -568,6 +568,18 @@ impl Session {
             log_entries: entries.iter().map(LogEntry::from).collect::<Vec<_>>(),
         })
     }
+
+    pub fn set_log_index(&self, log_index: u16) -> Result<(), Error> {
+        unsafe {
+            match ReturnCode::from(yubihsm_sys::yh_util_set_log_index(
+                self.this.get(),
+                log_index,
+            )) {
+                ReturnCode::Success => Ok(()),
+                e => bail!("util_set_log_index failed: {}", e),
+            }
+        }
+    }
 }
 
 impl Drop for Session {
