@@ -3,6 +3,7 @@ use yubihsm_sys::*;
 
 use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
+use std::ops::Deref;
 use std::os::raw::c_char;
 use std::ptr;
 
@@ -646,4 +647,234 @@ pub enum PublicKey {
     Rsa(Vec<u8>),
     Ecc(Vec<u8>, Vec<u8>),
     Edc(Vec<u8>),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Command {
+    Request(CommandType),
+    Response(CommandType),
+    Unknown,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CommandType {
+    Echo,
+    CreateSession,
+    AuthSession,
+    SessionMessage,
+    GetDeviceInfo,
+    Bsl,
+    Reset,
+    CloseSession,
+    StorageStatistics,
+    PutOpaque,
+    GetOpaque,
+    PutAuthKey,
+    PutAsymmetricKey,
+    GenerateAsymmetricKey,
+    SignPkcs1,
+    ListObjects,
+    DecryptPkcs1,
+    ExportWrapped,
+    ImportWrapped,
+    PutWrapKey,
+    GetLogs,
+    GetObjectInfo,
+    PutOption,
+    GetOption,
+    GetPsuedoRandom,
+    PutHmacKey,
+    HmacData,
+    GetPubkey,
+    SignPss,
+    SignEcdsa,
+    DecryptEcdh,
+    DeleteObject,
+    DecryptOaep,
+    GenerateHmacKey,
+    GenerateWrapKey,
+    VerifyHmac,
+    SshCertify,
+    PutTemplate,
+    GetTemplate,
+    OtpDecrypt,
+    OtpAeadCreate,
+    OtpAeadRandom,
+    OtpAeadRewrap,
+    AttestAsymmetric,
+    PutOtpAeadKey,
+    GenerateOtpAeadKey,
+    SetLogIndex,
+    WrapData,
+    UnwrapData,
+    SignEddsa,
+    Blink,
+    Error,
+}
+
+#[allow(non_upper_case_globals)]
+impl From<u8> for Command {
+    fn from(cmd: u8) -> Command {
+        match cmd as u32 {
+            yh_cmd_YHC_ECHO => Command::Request(CommandType::Echo),
+            yh_cmd_YHC_CREATE_SES => Command::Request(CommandType::CreateSession),
+            yh_cmd_YHC_AUTH_SES => Command::Request(CommandType::AuthSession),
+            yh_cmd_YHC_SES_MSG => Command::Request(CommandType::SessionMessage),
+            yh_cmd_YHC_GET_DEVICE_INFO => Command::Request(CommandType::GetDeviceInfo),
+            yh_cmd_YHC_BSL => Command::Request(CommandType::Bsl),
+            yh_cmd_YHC_RESET => Command::Request(CommandType::Reset),
+            yh_cmd_YHC_CLOSE_SES => Command::Request(CommandType::CloseSession),
+            yh_cmd_YHC_STATS => Command::Request(CommandType::StorageStatistics),
+            yh_cmd_YHC_PUT_OPAQUE => Command::Request(CommandType::PutOpaque),
+            yh_cmd_YHC_GET_OPAQUE => Command::Request(CommandType::GetOpaque),
+            yh_cmd_YHC_PUT_AUTHKEY => Command::Request(CommandType::PutAuthKey),
+            yh_cmd_YHC_PUT_ASYMMETRIC_KEY => Command::Request(CommandType::PutAsymmetricKey),
+            yh_cmd_YHC_GEN_ASYMMETRIC_KEY => Command::Request(CommandType::GenerateAsymmetricKey),
+            yh_cmd_YHC_SIGN_DATA_PKCS1 => Command::Request(CommandType::SignPkcs1),
+            yh_cmd_YHC_LIST => Command::Request(CommandType::ListObjects),
+            yh_cmd_YHC_DECRYPT_PKCS1 => Command::Request(CommandType::DecryptPkcs1),
+            yh_cmd_YHC_EXPORT_WRAPPED => Command::Request(CommandType::ExportWrapped),
+            yh_cmd_YHC_IMPORT_WRAPPED => Command::Request(CommandType::ImportWrapped),
+            yh_cmd_YHC_PUT_WRAP_KEY => Command::Request(CommandType::PutWrapKey),
+            yh_cmd_YHC_GET_LOGS => Command::Request(CommandType::GetLogs),
+            yh_cmd_YHC_GET_OBJECT_INFO => Command::Request(CommandType::GetObjectInfo),
+            yh_cmd_YHC_PUT_OPTION => Command::Request(CommandType::PutOption),
+            yh_cmd_YHC_GET_OPTION => Command::Request(CommandType::GetOption),
+            yh_cmd_YHC_GET_PSEUDO_RANDOM => Command::Request(CommandType::GetPsuedoRandom),
+            yh_cmd_YHC_PUT_HMAC_KEY => Command::Request(CommandType::PutHmacKey),
+            yh_cmd_YHC_HMAC_DATA => Command::Request(CommandType::HmacData),
+            yh_cmd_YHC_GET_PUBKEY => Command::Request(CommandType::GetPubkey),
+            yh_cmd_YHC_SIGN_DATA_PSS => Command::Request(CommandType::SignPss),
+            yh_cmd_YHC_SIGN_DATA_ECDSA => Command::Request(CommandType::SignEcdsa),
+            yh_cmd_YHC_DECRYPT_ECDH => Command::Request(CommandType::DecryptEcdh),
+            yh_cmd_YHC_DELETE_OBJECT => Command::Request(CommandType::DeleteObject),
+            yh_cmd_YHC_DECRYPT_OAEP => Command::Request(CommandType::DecryptOaep),
+            yh_cmd_YHC_GENERATE_HMAC_KEY => Command::Request(CommandType::GenerateHmacKey),
+            yh_cmd_YHC_GENERATE_WRAP_KEY => Command::Request(CommandType::GenerateWrapKey),
+            yh_cmd_YHC_VERIFY_HMAC => Command::Request(CommandType::VerifyHmac),
+            yh_cmd_YHC_SSH_CERTIFY => Command::Request(CommandType::SshCertify),
+            yh_cmd_YHC_PUT_TEMPLATE => Command::Request(CommandType::PutTemplate),
+            yh_cmd_YHC_GET_TEMPLATE => Command::Request(CommandType::GetTemplate),
+            yh_cmd_YHC_OTP_DECRYPT => Command::Request(CommandType::OtpDecrypt),
+            yh_cmd_YHC_OTP_AEAD_CREATE => Command::Request(CommandType::OtpAeadCreate),
+            yh_cmd_YHC_OTP_AEAD_RANDOM => Command::Request(CommandType::OtpAeadRandom),
+            yh_cmd_YHC_OTP_AEAD_REWRAP => Command::Request(CommandType::OtpAeadRewrap),
+            yh_cmd_YHC_ATTEST_ASYMMETRIC => Command::Request(CommandType::AttestAsymmetric),
+            yh_cmd_YHC_PUT_OTP_AEAD_KEY => Command::Request(CommandType::PutOtpAeadKey),
+            yh_cmd_YHC_GENERATE_OTP_AEAD_KEY => Command::Request(CommandType::GenerateOtpAeadKey),
+            yh_cmd_YHC_SET_LOG_INDEX => Command::Request(CommandType::SetLogIndex),
+            yh_cmd_YHC_WRAP_DATA => Command::Request(CommandType::WrapData),
+            yh_cmd_YHC_UNWRAP_DATA => Command::Request(CommandType::UnwrapData),
+            yh_cmd_YHC_SIGN_DATA_EDDSA => Command::Request(CommandType::SignEddsa),
+            yh_cmd_YHC_BLINK => Command::Request(CommandType::Blink),
+            yh_cmd_YHC_ECHO_R => Command::Response(CommandType::Echo),
+            yh_cmd_YHC_CREATE_SES_R => Command::Response(CommandType::CreateSession),
+            yh_cmd_YHC_AUTH_SES_R => Command::Response(CommandType::AuthSession),
+            yh_cmd_YHC_SES_MSG_R => Command::Response(CommandType::SessionMessage),
+            yh_cmd_YHC_GET_DEVICE_INFO_R => Command::Response(CommandType::GetDeviceInfo),
+            yh_cmd_YHC_BSL_R => Command::Response(CommandType::Bsl),
+            yh_cmd_YHC_RESET_R => Command::Response(CommandType::Reset),
+            yh_cmd_YHC_CLOSE_SES_R => Command::Response(CommandType::CloseSession),
+            yh_cmd_YHC_STATS_R => Command::Response(CommandType::StorageStatistics),
+            yh_cmd_YHC_PUT_OPAQUE_R => Command::Response(CommandType::PutOpaque),
+            yh_cmd_YHC_GET_OPAQUE_R => Command::Response(CommandType::GetOpaque),
+            yh_cmd_YHC_PUT_AUTHKEY_R => Command::Response(CommandType::PutAuthKey),
+            yh_cmd_YHC_PUT_ASYMMETRIC_KEY_R => Command::Response(CommandType::PutAsymmetricKey),
+            yh_cmd_YHC_GEN_ASYMMETRIC_KEY_R => {
+                Command::Response(CommandType::GenerateAsymmetricKey)
+            }
+            yh_cmd_YHC_SIGN_DATA_PKCS1_R => Command::Response(CommandType::SignPkcs1),
+            yh_cmd_YHC_LIST_R => Command::Response(CommandType::ListObjects),
+            yh_cmd_YHC_DECRYPT_PKCS1_R => Command::Response(CommandType::DecryptPkcs1),
+            yh_cmd_YHC_EXPORT_WRAPPED_R => Command::Response(CommandType::ExportWrapped),
+            yh_cmd_YHC_IMPORT_WRAPPED_R => Command::Response(CommandType::ImportWrapped),
+            yh_cmd_YHC_PUT_WRAP_KEY_R => Command::Response(CommandType::PutWrapKey),
+            yh_cmd_YHC_GET_LOGS_R => Command::Response(CommandType::GetLogs),
+            yh_cmd_YHC_GET_OBJECT_INFO_R => Command::Response(CommandType::GetObjectInfo),
+            yh_cmd_YHC_PUT_OPTION_R => Command::Response(CommandType::PutOption),
+            yh_cmd_YHC_GET_OPTION_R => Command::Response(CommandType::GetOption),
+            yh_cmd_YHC_GET_PSEUDO_RANDOM_R => Command::Response(CommandType::GetPsuedoRandom),
+            yh_cmd_YHC_PUT_HMAC_KEY_R => Command::Response(CommandType::PutHmacKey),
+            yh_cmd_YHC_HMAC_DATA_R => Command::Response(CommandType::HmacData),
+            yh_cmd_YHC_GET_PUBKEY_R => Command::Response(CommandType::GetPubkey),
+            yh_cmd_YHC_SIGN_DATA_PSS_R => Command::Response(CommandType::SignPss),
+            yh_cmd_YHC_SIGN_DATA_ECDSA_R => Command::Response(CommandType::SignEcdsa),
+            yh_cmd_YHC_DECRYPT_ECDH_R => Command::Response(CommandType::DecryptEcdh),
+            yh_cmd_YHC_DELETE_OBJECT_R => Command::Response(CommandType::DeleteObject),
+            yh_cmd_YHC_DECRYPT_OAEP_R => Command::Response(CommandType::DecryptOaep),
+            yh_cmd_YHC_GENERATE_HMAC_KEY_R => Command::Response(CommandType::GenerateHmacKey),
+            yh_cmd_YHC_GENERATE_WRAP_KEY_R => Command::Response(CommandType::GenerateWrapKey),
+            yh_cmd_YHC_VERIFY_HMAC_R => Command::Response(CommandType::VerifyHmac),
+            yh_cmd_YHC_SSH_CERTIFY_R => Command::Response(CommandType::SshCertify),
+            yh_cmd_YHC_PUT_TEMPLATE_R => Command::Response(CommandType::PutTemplate),
+            yh_cmd_YHC_GET_TEMPLATE_R => Command::Response(CommandType::GetTemplate),
+            yh_cmd_YHC_OTP_DECRYPT_R => Command::Response(CommandType::OtpDecrypt),
+            yh_cmd_YHC_OTP_AEAD_CREATE_R => Command::Response(CommandType::OtpAeadCreate),
+            yh_cmd_YHC_OTP_AEAD_RANDOM_R => Command::Response(CommandType::OtpAeadRandom),
+            yh_cmd_YHC_OTP_AEAD_REWRAP_R => Command::Response(CommandType::OtpAeadRewrap),
+            yh_cmd_YHC_ATTEST_ASYMMETRIC_R => Command::Response(CommandType::AttestAsymmetric),
+            yh_cmd_YHC_PUT_OTP_AEAD_KEY_R => Command::Response(CommandType::PutOtpAeadKey),
+            yh_cmd_YHC_GENERATE_OTP_AEAD_KEY_R => {
+                Command::Response(CommandType::GenerateOtpAeadKey)
+            }
+            yh_cmd_YHC_SET_LOG_INDEX_R => Command::Response(CommandType::SetLogIndex),
+            yh_cmd_YHC_WRAP_DATA_R => Command::Response(CommandType::WrapData),
+            yh_cmd_YHC_UNWRAP_DATA_R => Command::Response(CommandType::UnwrapData),
+            yh_cmd_YHC_SIGN_DATA_EDDSA_R => Command::Response(CommandType::SignEddsa),
+            yh_cmd_YHC_BLINK_R => Command::Response(CommandType::Blink),
+            yh_cmd_YHC_ERROR => Command::Response(CommandType::Error),
+            _ => Command::Unknown,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Log {
+    pub unlogged_boots: u16,
+    pub unlogged_auths: u16,
+    pub(crate) log_entries: Vec<LogEntry>,
+}
+
+impl Log {
+    pub fn log_entries(&self) -> &[LogEntry] {
+        &self.log_entries
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct LogEntry {
+    pub index: u16,
+    pub command: Command,
+    pub data_length: u16,
+    pub session_key: u16,
+    pub target_key: u16,
+    pub second_key: u16,
+    pub result: Command,
+    pub systick: u32,
+    digest: Vec<u8>,
+}
+
+impl LogEntry {
+    pub fn digest(&self) -> &[u8] {
+        &self.digest
+    }
+}
+
+impl<T> From<T> for LogEntry
+where
+    T: Deref<Target = yh_log_entry>,
+{
+    fn from(entry: T) -> LogEntry {
+        LogEntry {
+            index: entry.number,
+            command: Command::from(entry.command),
+            data_length: entry.length,
+            session_key: entry.session_key,
+            target_key: entry.target_key,
+            second_key: entry.second_key,
+            result: Command::from(entry.result),
+            systick: entry.systick,
+            digest: Vec::from(entry.digest.as_ref()),
+        }
+    }
 }
