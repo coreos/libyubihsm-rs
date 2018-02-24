@@ -3,7 +3,6 @@ use yubihsm_sys::*;
 
 use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
-use std::ops::Deref;
 use std::os::raw::c_char;
 use std::ptr;
 
@@ -713,9 +712,12 @@ pub enum CommandType {
 }
 
 #[allow(non_upper_case_globals)]
-impl From<u8> for Command {
-    fn from(cmd: u8) -> Command {
-        match cmd as u32 {
+impl<T> From<T> for Command
+where
+    T: Into<u32>,
+{
+    fn from(cmd: T) -> Command {
+        match cmd.into() {
             yh_cmd_YHC_ECHO => Command::Request(CommandType::Echo),
             yh_cmd_YHC_CREATE_SES => Command::Request(CommandType::CreateSession),
             yh_cmd_YHC_AUTH_SES => Command::Request(CommandType::AuthSession),
@@ -860,11 +862,8 @@ impl LogEntry {
     }
 }
 
-impl<T> From<T> for LogEntry
-where
-    T: Deref<Target = yh_log_entry>,
-{
-    fn from(entry: T) -> LogEntry {
+impl From<yh_log_entry> for LogEntry {
+    fn from(entry: yh_log_entry) -> LogEntry {
         LogEntry {
             index: entry.number,
             command: Command::from(entry.command),
@@ -875,6 +874,31 @@ where
             result: Command::from(entry.result),
             systick: entry.systick,
             digest: Vec::from(entry.digest.as_ref()),
+        }
+    }
+}
+
+impl From<LogEntry> for yh_log_entry {
+    fn from(entry: LogEntry) -> yh_log_entry {
+        const DIGEST_SIZE: usize = YH_LOG_DIGEST_SIZE as usize;
+
+        let mut digest_vec = entry.digest.clone();
+        if digest_vec.len() < DIGEST_SIZE {
+            digest_vec.extend(&[0; DIGEST_SIZE]);
+        }
+
+        let digest_arr: [u8; DIGEST_SIZE] = [digest_vec.remove(0); DIGEST_SIZE];
+
+        yh_log_entry {
+            number: entry.index,
+            command: 0,
+            length: entry.data_length,
+            session_key: entry.session_key,
+            target_key: entry.target_key,
+            second_key: entry.second_key,
+            result: 0,
+            systick: entry.systick,
+            digest: digest_arr,
         }
     }
 }
