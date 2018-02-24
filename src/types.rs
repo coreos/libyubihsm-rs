@@ -712,9 +712,12 @@ pub enum CommandType {
 }
 
 #[allow(non_upper_case_globals)]
-impl From<u8> for Command {
-    fn from(cmd: u8) -> Command {
-        match cmd as u32 {
+impl<T> From<T> for Command
+where
+    T: Into<u32>,
+{
+    fn from(cmd: T) -> Command {
+        match cmd.into() {
             yh_cmd_YHC_ECHO => Command::Request(CommandType::Echo),
             yh_cmd_YHC_CREATE_SES => Command::Request(CommandType::CreateSession),
             yh_cmd_YHC_AUTH_SES => Command::Request(CommandType::AuthSession),
