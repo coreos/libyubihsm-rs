@@ -3,7 +3,6 @@ use yubihsm_sys::*;
 
 use std::ffi::{CStr, CString};
 use std::fmt::{Display, Formatter};
-use std::ops::Deref;
 use std::os::raw::c_char;
 use std::ptr;
 
@@ -860,11 +859,8 @@ impl LogEntry {
     }
 }
 
-impl<T> From<T> for LogEntry
-where
-    T: Deref<Target = yh_log_entry>,
-{
-    fn from(entry: T) -> LogEntry {
+impl From<yh_log_entry> for LogEntry {
+    fn from(entry: yh_log_entry) -> LogEntry {
         LogEntry {
             index: entry.number,
             command: Command::from(entry.command),

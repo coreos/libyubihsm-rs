@@ -565,7 +565,7 @@ impl Session {
         Ok(Log {
             unlogged_boots: unlogged_boots,
             unlogged_auths: unlogged_auths,
-            log_entries: entries.iter().map(LogEntry::from).collect::<Vec<_>>(),
+            log_entries: entries.into_iter().map(LogEntry::from).collect::<Vec<_>>(),
         })
     }
 
