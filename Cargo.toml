@@ -1,5 +1,5 @@
 [package]
-name = "yubihsm"
+name = "libyubihsm"
 version = "0.1.0"
 authors = ["James Forcier <james.forcier@coreos.com>"]
 
