@@ -5,6 +5,9 @@ use yubihsm_sys::{self, yh_capabilities, yh_session};
 
 use std::cell::Cell;
 use std::ffi::CString;
+use std::ops::Deref;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicPtr, Ordering};
 
 macro_rules! generate_key {
     ($name:ident, $yh_func:ident) => (
@@ -23,7 +26,7 @@ macro_rules! generate_key {
 
             unsafe {
                 match ReturnCode::from(yubihsm_sys::$yh_func(
-                    self.this.get(),
+                    self.this.load(Ordering::Relaxed),
                     &mut key_id_ptr,
                     c_label.as_ptr(),
                     lib_domains.0,
@@ -38,26 +41,56 @@ macro_rules! generate_key {
     )
 }
 
+// In order to implement `Drop` correctly here, we need to move the `AtomicPtr<yh_session>` into
+// its own type. This lets us avoid relying on `Arc::strong_count()`. According to the Rust docs on
+// `Arc::strong_count()`:
+//      This method by itself is safe, but using it correctly requires extra care. Another thread
+//      can change the strong count at any time, including potentially between calling this method
+//      and acting on the result.
+// So, we need to run the session-teardown functions when the Arc drops its contents, instead of
+// trying to reimplement part of Arc's `Drop`.
+#[derive(Debug)]
+struct SessionPtr(AtomicPtr<yh_session>);
+
+impl Drop for SessionPtr {
+    fn drop(&mut self) {
+        unsafe {
+            yubihsm_sys::yh_util_close_session(self.0.load(Ordering::Relaxed));
+            yubihsm_sys::yh_destroy_session(&mut self.0.load(Ordering::Relaxed));
+        }
+    }
+}
+
+impl Deref for SessionPtr {
+    type Target = AtomicPtr<yh_session>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 /// Represents a `Session` with the HSM.
 ///
 /// The `Session` is where the bulk of the YubiHSM's functionality is found. A `Session` is needed
 /// to perform any cryptographic or device administration tasks.
 #[derive(Clone, Debug)]
 pub struct Session {
-    this: Cell<*mut yh_session>,
+    this: Arc<SessionPtr>,
+    _unsync_marker: Cell<()>,
 }
 
 impl Session {
     pub(crate) fn new(this: *mut yh_session) -> Session {
         Session {
-            this: Cell::new(this),
+            this: Arc::new(SessionPtr(AtomicPtr::new(this))),
+            _unsync_marker: Cell::new(()),
         }
     }
 
     pub fn delete_object(&self, obj_id: u16, obj_type: ObjectType) -> Result<(), Error> {
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_delete_object(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 obj_id,
                 obj_type.into(),
             )) {
@@ -73,7 +106,7 @@ impl Session {
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_util_get_random(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 len,
                 out.as_mut_ptr(),
                 &mut out_size,
@@ -104,7 +137,7 @@ impl Session {
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_ecdsa(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 key_id,
                 data_slice.as_ptr(),
                 data_slice.len(),
@@ -133,7 +166,7 @@ impl Session {
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_eddsa(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 key_id,
                 data_slice.as_ptr(),
                 data_slice.len(),
@@ -167,7 +200,7 @@ impl Session {
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_pkcs1v1_5(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 key_id,
                 hashed,
                 data_slice.as_ptr(),
@@ -203,7 +236,7 @@ impl Session {
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_util_sign_pss(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 key_id,
                 data_slice.as_ptr(),
                 data_slice.len(),
@@ -248,7 +281,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_generate_key_wrap(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut key_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -278,7 +311,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_ec(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut key_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -308,7 +341,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_ed(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut key_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -338,7 +371,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_hmac(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut key_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -372,7 +405,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_rsa(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut key_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -407,7 +440,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_wrap(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut key_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -442,7 +475,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_authkey(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut key_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -473,7 +506,7 @@ impl Session {
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_opaque(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut obj_id_ptr,
                 c_label.as_ptr(),
                 lib_domains.0,
@@ -499,7 +532,7 @@ impl Session {
 
         let rc = unsafe {
             ReturnCode::from(yubihsm_sys::yh_util_get_pubkey(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 key_id,
                 data.as_mut_ptr(),
                 &mut data_length,
@@ -547,7 +580,7 @@ impl Session {
 
         let rc = unsafe {
             ReturnCode::from(yubihsm_sys::yh_util_get_logs(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut unlogged_boots,
                 &mut unlogged_auths,
                 entries.as_mut_ptr(),
@@ -572,21 +605,12 @@ impl Session {
     pub fn set_log_index(&self, log_index: u16) -> Result<(), Error> {
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_set_log_index(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 log_index,
             )) {
                 ReturnCode::Success => Ok(()),
                 e => bail!("util_set_log_index failed: {}", e),
             }
-        }
-    }
-}
-
-impl Drop for Session {
-    fn drop(&mut self) {
-        unsafe {
-            yubihsm_sys::yh_util_close_session(self.this.get());
-            yubihsm_sys::yh_destroy_session(&mut self.this.get());
         }
     }
 }
