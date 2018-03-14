@@ -711,6 +711,67 @@ pub enum CommandType {
     Error,
 }
 
+impl From<CommandType> for u8 {
+    fn from(cmd_type: CommandType) -> u8 {
+        let out = match cmd_type {
+            CommandType::Echo => yh_cmd_YHC_ECHO,
+            CommandType::CreateSession => yh_cmd_YHC_CREATE_SES,
+            CommandType::AuthSession => yh_cmd_YHC_AUTH_SES,
+            CommandType::SessionMessage => yh_cmd_YHC_SES_MSG,
+            CommandType::GetDeviceInfo => yh_cmd_YHC_GET_DEVICE_INFO,
+            CommandType::Bsl => yh_cmd_YHC_BSL,
+            CommandType::Reset => yh_cmd_YHC_RESET,
+            CommandType::CloseSession => yh_cmd_YHC_CLOSE_SES,
+            CommandType::StorageStatistics => yh_cmd_YHC_STATS,
+            CommandType::PutOpaque => yh_cmd_YHC_PUT_OPAQUE,
+            CommandType::GetOpaque => yh_cmd_YHC_GET_OPAQUE,
+            CommandType::PutAuthKey => yh_cmd_YHC_PUT_AUTHKEY,
+            CommandType::PutAsymmetricKey => yh_cmd_YHC_PUT_ASYMMETRIC_KEY,
+            CommandType::GenerateAsymmetricKey => yh_cmd_YHC_GEN_ASYMMETRIC_KEY,
+            CommandType::SignPkcs1 => yh_cmd_YHC_SIGN_DATA_PKCS1,
+            CommandType::ListObjects => yh_cmd_YHC_LIST,
+            CommandType::DecryptPkcs1 => yh_cmd_YHC_DECRYPT_PKCS1,
+            CommandType::ExportWrapped => yh_cmd_YHC_EXPORT_WRAPPED,
+            CommandType::ImportWrapped => yh_cmd_YHC_IMPORT_WRAPPED,
+            CommandType::PutWrapKey => yh_cmd_YHC_PUT_WRAP_KEY,
+            CommandType::GetLogs => yh_cmd_YHC_GET_LOGS,
+            CommandType::GetObjectInfo => yh_cmd_YHC_GET_OBJECT_INFO,
+            CommandType::PutOption => yh_cmd_YHC_PUT_OPTION,
+            CommandType::GetOption => yh_cmd_YHC_GET_OPTION,
+            CommandType::GetPsuedoRandom => yh_cmd_YHC_GET_PSEUDO_RANDOM,
+            CommandType::PutHmacKey => yh_cmd_YHC_PUT_HMAC_KEY,
+            CommandType::HmacData => yh_cmd_YHC_HMAC_DATA,
+            CommandType::GetPubkey => yh_cmd_YHC_GET_PUBKEY,
+            CommandType::SignPss => yh_cmd_YHC_SIGN_DATA_PSS,
+            CommandType::SignEcdsa => yh_cmd_YHC_SIGN_DATA_ECDSA,
+            CommandType::DecryptEcdh => yh_cmd_YHC_DECRYPT_ECDH,
+            CommandType::DeleteObject => yh_cmd_YHC_DELETE_OBJECT,
+            CommandType::DecryptOaep => yh_cmd_YHC_DECRYPT_OAEP,
+            CommandType::GenerateHmacKey => yh_cmd_YHC_GENERATE_HMAC_KEY,
+            CommandType::GenerateWrapKey => yh_cmd_YHC_GENERATE_WRAP_KEY,
+            CommandType::VerifyHmac => yh_cmd_YHC_VERIFY_HMAC,
+            CommandType::SshCertify => yh_cmd_YHC_SSH_CERTIFY,
+            CommandType::PutTemplate => yh_cmd_YHC_PUT_TEMPLATE,
+            CommandType::GetTemplate => yh_cmd_YHC_GET_TEMPLATE,
+            CommandType::OtpDecrypt => yh_cmd_YHC_OTP_DECRYPT,
+            CommandType::OtpAeadCreate => yh_cmd_YHC_OTP_AEAD_CREATE,
+            CommandType::OtpAeadRandom => yh_cmd_YHC_OTP_AEAD_RANDOM,
+            CommandType::OtpAeadRewrap => yh_cmd_YHC_OTP_AEAD_REWRAP,
+            CommandType::AttestAsymmetric => yh_cmd_YHC_ATTEST_ASYMMETRIC,
+            CommandType::PutOtpAeadKey => yh_cmd_YHC_PUT_OTP_AEAD_KEY,
+            CommandType::GenerateOtpAeadKey => yh_cmd_YHC_GENERATE_OTP_AEAD_KEY,
+            CommandType::SetLogIndex => yh_cmd_YHC_SET_LOG_INDEX,
+            CommandType::WrapData => yh_cmd_YHC_WRAP_DATA,
+            CommandType::UnwrapData => yh_cmd_YHC_UNWRAP_DATA,
+            CommandType::SignEddsa => yh_cmd_YHC_SIGN_DATA_EDDSA,
+            CommandType::Blink => yh_cmd_YHC_BLINK,
+            CommandType::Error => yh_cmd_YHC_ERROR,
+        };
+
+        out as u8
+    }
+}
+
 #[allow(non_upper_case_globals)]
 impl<T> From<T> for Command
 where
@@ -826,6 +887,16 @@ where
             yh_cmd_YHC_BLINK_R => Command::Response(CommandType::Blink),
             yh_cmd_YHC_ERROR => Command::Response(CommandType::Error),
             _ => Command::Unknown,
+        }
+    }
+}
+
+impl From<Command> for u8 {
+    fn from(cmd: Command) -> u8 {
+        match cmd {
+            Command::Request(ty) => u8::from(ty),
+            Command::Response(ty) => u8::from(ty) | 0x80,
+            Command::Unknown => u8::from(CommandType::Error),
         }
     }
 }
