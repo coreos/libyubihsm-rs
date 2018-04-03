@@ -15,11 +15,11 @@ created through a `Connector`, which connects to a running instance of `yubihsm-
 is included in the SDK\). Once a `Session` has been obtained, it can be used for cryptographic
 functions provided by the YubiHSM2.
 
-libyubihsm-rs is not currently published on [crates](https://crates.io). It can be added as a
-dependency by adding the following to your `Cargo.toml`:
+libyubihsm-rs is published on [crates](https://crates.io). It can be added as a dependency by adding
+the following to your `Cargo.toml`:
 ```
 [dependencies.libyubihsm]
-git = "https://github.com/coreos/libyubihsm-rs"
+version = "0.1"
 ```
 
 ## Documentation
