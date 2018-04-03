@@ -2,11 +2,14 @@ use types::*;
 use session::Session;
 
 use failure::Error;
-use yubihsm_sys::{self, yh_algorithm, yh_connector, yh_session, YH_CONTEXT_LEN,
-                  YH_MAX_ALGORITHM_COUNT};
+use yubihsm_sys::{self, yh_algorithm, yh_connector, yh_connector_option,
+                  yh_connector_option_YH_CONNECTOR_HTTPS_CA,
+                  yh_connector_option_YH_CONNECTOR_PROXY_SERVER, yh_session,
+                  YH_CONTEXT_LEN, YH_MAX_ALGORITHM_COUNT};
 
 use std::ffi::CString;
 use std::ops::Deref;
+use std::os::raw::c_void;
 use std::ptr;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicPtr, Ordering};
@@ -31,18 +34,72 @@ impl Deref for ConnectorPtr {
 }
 
 #[derive(Clone, Debug)]
+pub struct ConnectorBuilder {
+    https_ca: Option<String>,
+    proxy_server: Option<String>,
+}
+
+impl ConnectorBuilder {
+    pub(crate) fn new() -> ConnectorBuilder {
+        ConnectorBuilder {
+            https_ca: None,
+            proxy_server: None,
+        }
+    }
+
+    pub fn with_https_ca(mut self, ca_file: String) -> ConnectorBuilder {
+        self.https_ca = Some(ca_file);
+        self
+    }
+
+    pub fn with_proxy_server(mut self, proxy_server: String) -> ConnectorBuilder {
+        self.proxy_server = Some(proxy_server);
+        self
+    }
+
+    pub fn connect(self, url: &str) -> Result<Connector, Error> {
+        let url_c = CString::new(url)?;
+        let mut connector = Connector::new(url_c)?;
+
+        if let Some(https_ca) = self.https_ca {
+            connector.set_string_option(yh_connector_option_YH_CONNECTOR_HTTPS_CA, &https_ca)?;
+        }
+
+        if let Some(proxy_server) = self.proxy_server {
+            connector.set_string_option(yh_connector_option_YH_CONNECTOR_PROXY_SERVER, &proxy_server)?;
+        }
+
+        connector.connect()?;
+        Ok(connector)
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct Connector {
     this: Arc<ConnectorPtr>,
 }
 
 impl Connector {
-    pub(crate) fn new(this: *mut yh_connector) -> Connector {
-        Connector {
-            this: Arc::new(ConnectorPtr(AtomicPtr::new(this))),
+    fn new(url: CString) -> Result<Connector, Error> {
+        let mut connector_ptr: *mut yh_connector = ptr::null_mut();
+
+        unsafe {
+            let ret = ReturnCode::from(yubihsm_sys::yh_init_connector(
+                url.as_ptr(),
+                &mut connector_ptr,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!("couldn't create connector: {}", ret);
+            }
         }
+
+        Ok(Connector {
+            this: Arc::new(ConnectorPtr(AtomicPtr::new(connector_ptr))),
+        })
     }
 
-    pub fn connect(&self) -> Result<(), Error> {
+    fn connect(&mut self) -> Result<(), Error> {
         let mut this = self.this.load(Ordering::Relaxed);
 
         unsafe {
@@ -50,6 +107,25 @@ impl Connector {
 
             if ret != ReturnCode::Success {
                 bail!("failed to connect: {}", ret);
+            }
+        }
+
+        Ok(())
+    }
+
+    fn set_string_option(&mut self, option: yh_connector_option, value: &str) -> Result<(), Error> {
+        let this = self.this.load(Ordering::Relaxed);
+        let value_c = CString::new(value)?;
+
+        unsafe {
+            let ret = ReturnCode::from(yubihsm_sys::yh_set_connector_option(
+                this,
+                option,
+                value_c.as_ptr() as *const c_void,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!("failed to set option: {}", ret);
             }
         }
 
