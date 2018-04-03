@@ -7,24 +7,46 @@ use yubihsm_sys::{self, yh_algorithm, yh_connector, yh_session, YH_CONTEXT_LEN,
 
 use std::cell::Cell;
 use std::ffi::CString;
+use std::ops::Deref;
 use std::ptr;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicPtr, Ordering};
+
+#[derive(Debug)]
+struct ConnectorPtr(AtomicPtr<yh_connector>);
+
+impl Drop for ConnectorPtr {
+    fn drop(&mut self) {
+        unsafe {
+            yubihsm_sys::yh_disconnect(self.0.load(Ordering::Relaxed));
+        }
+    }
+}
+
+impl Deref for ConnectorPtr {
+    type Target = AtomicPtr<yh_connector>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct Connector {
-    this: Cell<*mut yh_connector>,
+    this: Arc<ConnectorPtr>,
     connected: Cell<bool>,
 }
 
 impl Connector {
     pub(crate) fn new(this: *mut yh_connector) -> Connector {
         Connector {
-            this: Cell::new(this),
+            this: Arc::new(ConnectorPtr(AtomicPtr::new(this))),
             connected: Cell::new(false),
         }
     }
 
     pub fn connect(&self) -> Result<(), Error> {
-        let mut this = self.this.get();
+        let mut this = self.this.load(Ordering::Relaxed);
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_connect_best(&mut this, 1, ptr::null_mut()));
@@ -34,7 +56,6 @@ impl Connector {
             }
         }
 
-        self.this.set(this);
         self.connected.set(true);
 
         Ok(())
@@ -59,7 +80,7 @@ impl Connector {
 
         unsafe {
             let mut ret = ReturnCode::from(yubihsm_sys::yh_create_session_derived(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 auth_key_id,
                 password_bytes.as_ptr(),
                 password_bytes.len(),
@@ -101,7 +122,7 @@ impl Connector {
 
         unsafe {
             let ret = ReturnCode::from(yubihsm_sys::yh_util_get_device_info(
-                self.this.get(),
+                self.this.load(Ordering::Relaxed),
                 &mut major,
                 &mut minor,
                 &mut patch,
@@ -131,13 +152,5 @@ impl Connector {
                 .map(Algorithm::from)
                 .collect::<Vec<_>>(),
         })
-    }
-}
-
-impl Drop for Connector {
-    fn drop(&mut self) {
-        if self.connected.get() {
-            unsafe { yubihsm_sys::yh_disconnect(self.this.get()); }
-        }
     }
 }
