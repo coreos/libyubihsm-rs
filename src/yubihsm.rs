@@ -1,10 +1,9 @@
-use connector::Connector;
+use connector::ConnectorBuilder;
 use types::*;
 
 use failure::Error;
-use yubihsm_sys::{self, yh_connector, yh_rc, yh_rc_YHR_SUCCESS};
+use yubihsm_sys::{self, yh_rc, yh_rc_YHR_SUCCESS};
 
-use std::ffi::CString;
 use std::sync::{Once, ONCE_INIT};
 use std::marker::PhantomData;
 use std::ptr;
@@ -35,22 +34,8 @@ impl Yubihsm {
         })
     }
 
-    pub fn create_connector(&self, url: &str) -> Result<Connector, Error> {
-        let url_c = CString::new(url)?;
-        let mut connector_ptr: *mut yh_connector = ptr::null_mut();
-
-        unsafe {
-            let ret = ReturnCode::from(yubihsm_sys::yh_init_connector(
-                url_c.as_ptr(),
-                &mut connector_ptr,
-            ));
-
-            if ret != ReturnCode::Success {
-                bail!("couldn't create connector: {}", ret);
-            }
-        }
-
-        Ok(Connector::new(connector_ptr))
+    pub fn connector(&self) -> ConnectorBuilder {
+        ConnectorBuilder::new()
     }
 
     pub fn verify_logs<T: AsRef<[LogEntry]>>(
