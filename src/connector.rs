@@ -5,7 +5,6 @@ use failure::Error;
 use yubihsm_sys::{self, yh_algorithm, yh_connector, yh_session, YH_CONTEXT_LEN,
                   YH_MAX_ALGORITHM_COUNT};
 
-use std::cell::Cell;
 use std::ffi::CString;
 use std::ops::Deref;
 use std::ptr;
@@ -34,14 +33,12 @@ impl Deref for ConnectorPtr {
 #[derive(Clone, Debug)]
 pub struct Connector {
     this: Arc<ConnectorPtr>,
-    connected: Cell<bool>,
 }
 
 impl Connector {
     pub(crate) fn new(this: *mut yh_connector) -> Connector {
         Connector {
             this: Arc::new(ConnectorPtr(AtomicPtr::new(this))),
-            connected: Cell::new(false),
         }
     }
 
@@ -56,8 +53,6 @@ impl Connector {
             }
         }
 
-        self.connected.set(true);
-
         Ok(())
     }
 
@@ -68,10 +63,6 @@ impl Connector {
         password: &str,
         recreate_session: bool,
     ) -> Result<Session, Error> {
-        if !self.connected.get() {
-            bail!("tried to use unconnected connector");
-        }
-
         let mut session_ptr: *mut yh_session = ptr::null_mut();
         let mut context: Vec<u8> = Vec::with_capacity(YH_CONTEXT_LEN as usize);
 
