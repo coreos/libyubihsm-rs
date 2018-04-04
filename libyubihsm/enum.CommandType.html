@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `CommandType` enum in crate `libyubihsm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, CommandType">
+
+    <title>libyubihsm::CommandType - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css"
+          id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../dark.css">
+    <link rel="stylesheet" type="text/css" href="../main.css" id="themeStyle">
+    <script src="../storage.js"></script>
+    
+
+    
+    
+</head>
+<body class="rustdoc enum">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
+        
+        <p class='location'>Enum CommandType</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#variants">Variants</a><div class="sidebar-links"><a href="#variant.Echo">Echo</a><a href="#variant.CreateSession">CreateSession</a><a href="#variant.AuthSession">AuthSession</a><a href="#variant.SessionMessage">SessionMessage</a><a href="#variant.GetDeviceInfo">GetDeviceInfo</a><a href="#variant.Bsl">Bsl</a><a href="#variant.Reset">Reset</a><a href="#variant.CloseSession">CloseSession</a><a href="#variant.StorageStatistics">StorageStatistics</a><a href="#variant.PutOpaque">PutOpaque</a><a href="#variant.GetOpaque">GetOpaque</a><a href="#variant.PutAuthKey">PutAuthKey</a><a href="#variant.PutAsymmetricKey">PutAsymmetricKey</a><a href="#variant.GenerateAsymmetricKey">GenerateAsymmetricKey</a><a href="#variant.SignPkcs1">SignPkcs1</a><a href="#variant.ListObjects">ListObjects</a><a href="#variant.DecryptPkcs1">DecryptPkcs1</a><a href="#variant.ExportWrapped">ExportWrapped</a><a href="#variant.ImportWrapped">ImportWrapped</a><a href="#variant.PutWrapKey">PutWrapKey</a><a href="#variant.GetLogs">GetLogs</a><a href="#variant.GetObjectInfo">GetObjectInfo</a><a href="#variant.PutOption">PutOption</a><a href="#variant.GetOption">GetOption</a><a href="#variant.GetPsuedoRandom">GetPsuedoRandom</a><a href="#variant.PutHmacKey">PutHmacKey</a><a href="#variant.HmacData">HmacData</a><a href="#variant.GetPubkey">GetPubkey</a><a href="#variant.SignPss">SignPss</a><a href="#variant.SignEcdsa">SignEcdsa</a><a href="#variant.DecryptEcdh">DecryptEcdh</a><a href="#variant.DeleteObject">DeleteObject</a><a href="#variant.DecryptOaep">DecryptOaep</a><a href="#variant.GenerateHmacKey">GenerateHmacKey</a><a href="#variant.GenerateWrapKey">GenerateWrapKey</a><a href="#variant.VerifyHmac">VerifyHmac</a><a href="#variant.SshCertify">SshCertify</a><a href="#variant.PutTemplate">PutTemplate</a><a href="#variant.GetTemplate">GetTemplate</a><a href="#variant.OtpDecrypt">OtpDecrypt</a><a href="#variant.OtpAeadCreate">OtpAeadCreate</a><a href="#variant.OtpAeadRandom">OtpAeadRandom</a><a href="#variant.OtpAeadRewrap">OtpAeadRewrap</a><a href="#variant.AttestAsymmetric">AttestAsymmetric</a><a href="#variant.PutOtpAeadKey">PutOtpAeadKey</a><a href="#variant.GenerateOtpAeadKey">GenerateOtpAeadKey</a><a href="#variant.SetLogIndex">SetLogIndex</a><a href="#variant.WrapData">WrapData</a><a href="#variant.UnwrapData">UnwrapData</a><a href="#variant.SignEddsa">SignEddsa</a><a href="#variant.Blink">Blink</a><a href="#variant.Error">Error</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Clone">Clone</a><a href="#impl-Copy">Copy</a><a href="#impl-Debug">Debug</a><a href="#impl-PartialEq">PartialEq</a><a href="#impl-Eq">Eq</a><a href="#impl-From%3CCommandType%3E">From&lt;CommandType&gt;</a></div><a class="sidebar-title" href="#synthetic-implementations">Auto Trait Implementations</a><div class="sidebar-links"><a href="#impl-Send">Send</a><a href="#impl-Sync">Sync</a></div></div><p class='location'><a href='index.html'>libyubihsm</a></p><script>window.sidebarCurrent = {name: 'CommandType', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
+    </nav>
+
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../theme.js"></script>
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>libyubihsm</a>::<wbr><a class="enum" href=''>CommandType</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/libyubihsm/types.rs.html#673-726' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum CommandType {
+    Echo,
+    CreateSession,
+    AuthSession,
+    SessionMessage,
+    GetDeviceInfo,
+    Bsl,
+    Reset,
+    CloseSession,
+    StorageStatistics,
+    PutOpaque,
+    GetOpaque,
+    PutAuthKey,
+    PutAsymmetricKey,
+    GenerateAsymmetricKey,
+    SignPkcs1,
+    ListObjects,
+    DecryptPkcs1,
+    ExportWrapped,
+    ImportWrapped,
+    PutWrapKey,
+    GetLogs,
+    GetObjectInfo,
+    PutOption,
+    GetOption,
+    GetPsuedoRandom,
+    PutHmacKey,
+    HmacData,
+    GetPubkey,
+    SignPss,
+    SignEcdsa,
+    DecryptEcdh,
+    DeleteObject,
+    DecryptOaep,
+    GenerateHmacKey,
+    GenerateWrapKey,
+    VerifyHmac,
+    SshCertify,
+    PutTemplate,
+    GetTemplate,
+    OtpDecrypt,
+    OtpAeadCreate,
+    OtpAeadRandom,
+    OtpAeadRewrap,
+    AttestAsymmetric,
+    PutOtpAeadKey,
+    GenerateOtpAeadKey,
+    SetLogIndex,
+    WrapData,
+    UnwrapData,
+    SignEddsa,
+    Blink,
+    Error,
+}</pre><h2 id='variants' class='variants small-section-header'>
+                   Variants<a href='#variants' class='anchor'></a></h2>
+<span id="variant.Echo" class="variant small-section-header"><a href="#variant.Echo" class="anchor field"></a><span id='Echo.v' class='invisible'><code>Echo</code></span></span><span id="variant.CreateSession" class="variant small-section-header"><a href="#variant.CreateSession" class="anchor field"></a><span id='CreateSession.v' class='invisible'><code>CreateSession</code></span></span><span id="variant.AuthSession" class="variant small-section-header"><a href="#variant.AuthSession" class="anchor field"></a><span id='AuthSession.v' class='invisible'><code>AuthSession</code></span></span><span id="variant.SessionMessage" class="variant small-section-header"><a href="#variant.SessionMessage" class="anchor field"></a><span id='SessionMessage.v' class='invisible'><code>SessionMessage</code></span></span><span id="variant.GetDeviceInfo" class="variant small-section-header"><a href="#variant.GetDeviceInfo" class="anchor field"></a><span id='GetDeviceInfo.v' class='invisible'><code>GetDeviceInfo</code></span></span><span id="variant.Bsl" class="variant small-section-header"><a href="#variant.Bsl" class="anchor field"></a><span id='Bsl.v' class='invisible'><code>Bsl</code></span></span><span id="variant.Reset" class="variant small-section-header"><a href="#variant.Reset" class="anchor field"></a><span id='Reset.v' class='invisible'><code>Reset</code></span></span><span id="variant.CloseSession" class="variant small-section-header"><a href="#variant.CloseSession" class="anchor field"></a><span id='CloseSession.v' class='invisible'><code>CloseSession</code></span></span><span id="variant.StorageStatistics" class="variant small-section-header"><a href="#variant.StorageStatistics" class="anchor field"></a><span id='StorageStatistics.v' class='invisible'><code>StorageStatistics</code></span></span><span id="variant.PutOpaque" class="variant small-section-header"><a href="#variant.PutOpaque" class="anchor field"></a><span id='PutOpaque.v' class='invisible'><code>PutOpaque</code></span></span><span id="variant.GetOpaque" class="variant small-section-header"><a href="#variant.GetOpaque" class="anchor field"></a><span id='GetOpaque.v' class='invisible'><code>GetOpaque</code></span></span><span id="variant.PutAuthKey" class="variant small-section-header"><a href="#variant.PutAuthKey" class="anchor field"></a><span id='PutAuthKey.v' class='invisible'><code>PutAuthKey</code></span></span><span id="variant.PutAsymmetricKey" class="variant small-section-header"><a href="#variant.PutAsymmetricKey" class="anchor field"></a><span id='PutAsymmetricKey.v' class='invisible'><code>PutAsymmetricKey</code></span></span><span id="variant.GenerateAsymmetricKey" class="variant small-section-header"><a href="#variant.GenerateAsymmetricKey" class="anchor field"></a><span id='GenerateAsymmetricKey.v' class='invisible'><code>GenerateAsymmetricKey</code></span></span><span id="variant.SignPkcs1" class="variant small-section-header"><a href="#variant.SignPkcs1" class="anchor field"></a><span id='SignPkcs1.v' class='invisible'><code>SignPkcs1</code></span></span><span id="variant.ListObjects" class="variant small-section-header"><a href="#variant.ListObjects" class="anchor field"></a><span id='ListObjects.v' class='invisible'><code>ListObjects</code></span></span><span id="variant.DecryptPkcs1" class="variant small-section-header"><a href="#variant.DecryptPkcs1" class="anchor field"></a><span id='DecryptPkcs1.v' class='invisible'><code>DecryptPkcs1</code></span></span><span id="variant.ExportWrapped" class="variant small-section-header"><a href="#variant.ExportWrapped" class="anchor field"></a><span id='ExportWrapped.v' class='invisible'><code>ExportWrapped</code></span></span><span id="variant.ImportWrapped" class="variant small-section-header"><a href="#variant.ImportWrapped" class="anchor field"></a><span id='ImportWrapped.v' class='invisible'><code>ImportWrapped</code></span></span><span id="variant.PutWrapKey" class="variant small-section-header"><a href="#variant.PutWrapKey" class="anchor field"></a><span id='PutWrapKey.v' class='invisible'><code>PutWrapKey</code></span></span><span id="variant.GetLogs" class="variant small-section-header"><a href="#variant.GetLogs" class="anchor field"></a><span id='GetLogs.v' class='invisible'><code>GetLogs</code></span></span><span id="variant.GetObjectInfo" class="variant small-section-header"><a href="#variant.GetObjectInfo" class="anchor field"></a><span id='GetObjectInfo.v' class='invisible'><code>GetObjectInfo</code></span></span><span id="variant.PutOption" class="variant small-section-header"><a href="#variant.PutOption" class="anchor field"></a><span id='PutOption.v' class='invisible'><code>PutOption</code></span></span><span id="variant.GetOption" class="variant small-section-header"><a href="#variant.GetOption" class="anchor field"></a><span id='GetOption.v' class='invisible'><code>GetOption</code></span></span><span id="variant.GetPsuedoRandom" class="variant small-section-header"><a href="#variant.GetPsuedoRandom" class="anchor field"></a><span id='GetPsuedoRandom.v' class='invisible'><code>GetPsuedoRandom</code></span></span><span id="variant.PutHmacKey" class="variant small-section-header"><a href="#variant.PutHmacKey" class="anchor field"></a><span id='PutHmacKey.v' class='invisible'><code>PutHmacKey</code></span></span><span id="variant.HmacData" class="variant small-section-header"><a href="#variant.HmacData" class="anchor field"></a><span id='HmacData.v' class='invisible'><code>HmacData</code></span></span><span id="variant.GetPubkey" class="variant small-section-header"><a href="#variant.GetPubkey" class="anchor field"></a><span id='GetPubkey.v' class='invisible'><code>GetPubkey</code></span></span><span id="variant.SignPss" class="variant small-section-header"><a href="#variant.SignPss" class="anchor field"></a><span id='SignPss.v' class='invisible'><code>SignPss</code></span></span><span id="variant.SignEcdsa" class="variant small-section-header"><a href="#variant.SignEcdsa" class="anchor field"></a><span id='SignEcdsa.v' class='invisible'><code>SignEcdsa</code></span></span><span id="variant.DecryptEcdh" class="variant small-section-header"><a href="#variant.DecryptEcdh" class="anchor field"></a><span id='DecryptEcdh.v' class='invisible'><code>DecryptEcdh</code></span></span><span id="variant.DeleteObject" class="variant small-section-header"><a href="#variant.DeleteObject" class="anchor field"></a><span id='DeleteObject.v' class='invisible'><code>DeleteObject</code></span></span><span id="variant.DecryptOaep" class="variant small-section-header"><a href="#variant.DecryptOaep" class="anchor field"></a><span id='DecryptOaep.v' class='invisible'><code>DecryptOaep</code></span></span><span id="variant.GenerateHmacKey" class="variant small-section-header"><a href="#variant.GenerateHmacKey" class="anchor field"></a><span id='GenerateHmacKey.v' class='invisible'><code>GenerateHmacKey</code></span></span><span id="variant.GenerateWrapKey" class="variant small-section-header"><a href="#variant.GenerateWrapKey" class="anchor field"></a><span id='GenerateWrapKey.v' class='invisible'><code>GenerateWrapKey</code></span></span><span id="variant.VerifyHmac" class="variant small-section-header"><a href="#variant.VerifyHmac" class="anchor field"></a><span id='VerifyHmac.v' class='invisible'><code>VerifyHmac</code></span></span><span id="variant.SshCertify" class="variant small-section-header"><a href="#variant.SshCertify" class="anchor field"></a><span id='SshCertify.v' class='invisible'><code>SshCertify</code></span></span><span id="variant.PutTemplate" class="variant small-section-header"><a href="#variant.PutTemplate" class="anchor field"></a><span id='PutTemplate.v' class='invisible'><code>PutTemplate</code></span></span><span id="variant.GetTemplate" class="variant small-section-header"><a href="#variant.GetTemplate" class="anchor field"></a><span id='GetTemplate.v' class='invisible'><code>GetTemplate</code></span></span><span id="variant.OtpDecrypt" class="variant small-section-header"><a href="#variant.OtpDecrypt" class="anchor field"></a><span id='OtpDecrypt.v' class='invisible'><code>OtpDecrypt</code></span></span><span id="variant.OtpAeadCreate" class="variant small-section-header"><a href="#variant.OtpAeadCreate" class="anchor field"></a><span id='OtpAeadCreate.v' class='invisible'><code>OtpAeadCreate</code></span></span><span id="variant.OtpAeadRandom" class="variant small-section-header"><a href="#variant.OtpAeadRandom" class="anchor field"></a><span id='OtpAeadRandom.v' class='invisible'><code>OtpAeadRandom</code></span></span><span id="variant.OtpAeadRewrap" class="variant small-section-header"><a href="#variant.OtpAeadRewrap" class="anchor field"></a><span id='OtpAeadRewrap.v' class='invisible'><code>OtpAeadRewrap</code></span></span><span id="variant.AttestAsymmetric" class="variant small-section-header"><a href="#variant.AttestAsymmetric" class="anchor field"></a><span id='AttestAsymmetric.v' class='invisible'><code>AttestAsymmetric</code></span></span><span id="variant.PutOtpAeadKey" class="variant small-section-header"><a href="#variant.PutOtpAeadKey" class="anchor field"></a><span id='PutOtpAeadKey.v' class='invisible'><code>PutOtpAeadKey</code></span></span><span id="variant.GenerateOtpAeadKey" class="variant small-section-header"><a href="#variant.GenerateOtpAeadKey" class="anchor field"></a><span id='GenerateOtpAeadKey.v' class='invisible'><code>GenerateOtpAeadKey</code></span></span><span id="variant.SetLogIndex" class="variant small-section-header"><a href="#variant.SetLogIndex" class="anchor field"></a><span id='SetLogIndex.v' class='invisible'><code>SetLogIndex</code></span></span><span id="variant.WrapData" class="variant small-section-header"><a href="#variant.WrapData" class="anchor field"></a><span id='WrapData.v' class='invisible'><code>WrapData</code></span></span><span id="variant.UnwrapData" class="variant small-section-header"><a href="#variant.UnwrapData" class="anchor field"></a><span id='UnwrapData.v' class='invisible'><code>UnwrapData</code></span></span><span id="variant.SignEddsa" class="variant small-section-header"><a href="#variant.SignEddsa" class="anchor field"></a><span id='SignEddsa.v' class='invisible'><code>SignEddsa</code></span></span><span id="variant.Blink" class="variant small-section-header"><a href="#variant.Blink" class="anchor field"></a><span id='Blink.v' class='invisible'><code>Blink</code></span></span><span id="variant.Error" class="variant small-section-header"><a href="#variant.Error" class="anchor field"></a><span id='Error.v' class='invisible'><code>Error</code></span></span>
+            <h2 id='implementations' class='small-section-header'>
+              Trait Implementations<a href='#implementations' class='anchor'></a>
+            </h2>
+            <div id='implementations-list'>
+        <h3 id='impl-Clone' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code><a href='#impl-Clone' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Self)</code></span><span class='out-of-band'><div class='ghost'></div><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/clone.rs.html#117-119' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 id='impl-Copy' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> for <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code><a href='#impl-Copy' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 id='impl-Debug' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code><a href='#impl-Debug' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></p>
+</div></div><h3 id='impl-PartialEq' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code><a href='#impl-PartialEq' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Rhs) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/cmp.rs.html#121' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 id='impl-Eq' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> for <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code><a href='#impl-Eq' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#672' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 id='impl-From%3CCommandType%3E' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a>&gt; for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a></code><a href='#impl-From%3CCommandType%3E' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#728-787' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from' class="method"><span id='from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(cmd_type: <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#729-786' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div></div>
+                <h2 id='synthetic-implementations' class='small-section-header'>
+                  Auto Trait Implementations<a href='#synthetic-implementations' class='anchor'></a>
+                </h2>
+                <div id='synthetic-implementations-list'>
+            <h3 id='impl-Send' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code><a href='#impl-Send' class='anchor'></a></span><span class='out-of-band'></span></h3>
+<div class='impl-items'></div><h3 id='impl-Sync' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="enum" href="../libyubihsm/enum.CommandType.html" title="enum libyubihsm::CommandType">CommandType</a></code><a href='#impl-Sync' class='anchor'></a></span><span class='out-of-band'></span></h3>
+<div class='impl-items'></div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt><kbd>?</kbd></dt>
+                    <dd>Show this help dialog</dd>
+                    <dt><kbd>S</kbd></dt>
+                    <dd>Focus the search field</dd>
+                    <dt><kbd>↑</kbd></dt>
+                    <dd>Move up in search results</dd>
+                    <dt><kbd>↓</kbd></dt>
+                    <dd>Move down in search results</dd>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
+                    <dd>Go to active search result</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "libyubihsm";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Capability` enum in crate `libyubihsm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Capability">
+
+    <title>libyubihsm::Capability - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css"
+          id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../dark.css">
+    <link rel="stylesheet" type="text/css" href="../main.css" id="themeStyle">
+    <script src="../storage.js"></script>
+    
+
+    
+    
+</head>
+<body class="rustdoc enum">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
+        
+        <p class='location'>Enum Capability</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#variants">Variants</a><div class="sidebar-links"><a href="#variant.GetOpaque">GetOpaque</a><a href="#variant.PutOpaque">PutOpaque</a><a href="#variant.PutAuthKey">PutAuthKey</a><a href="#variant.PutAsymmetric">PutAsymmetric</a><a href="#variant.AsymmetricGen">AsymmetricGen</a><a href="#variant.AsymmetricSignPkcs">AsymmetricSignPkcs</a><a href="#variant.AsymmetricSignPss">AsymmetricSignPss</a><a href="#variant.AsymmetricSignEcdsa">AsymmetricSignEcdsa</a><a href="#variant.AsymmetricSignEddsa">AsymmetricSignEddsa</a><a href="#variant.AsymmetricDecryptPkcs">AsymmetricDecryptPkcs</a><a href="#variant.AsymmetricDecryptOaep">AsymmetricDecryptOaep</a><a href="#variant.AsymmetricDecryptEcdh">AsymmetricDecryptEcdh</a><a href="#variant.ExportWrapped">ExportWrapped</a><a href="#variant.ImportWrapped">ImportWrapped</a><a href="#variant.PutWrapkey">PutWrapkey</a><a href="#variant.GenerateWrapkey">GenerateWrapkey</a><a href="#variant.ExportUnderWrap">ExportUnderWrap</a><a href="#variant.PutOption">PutOption</a><a href="#variant.GetOption">GetOption</a><a href="#variant.GetRandomness">GetRandomness</a><a href="#variant.PutHmackey">PutHmackey</a><a href="#variant.HmackeyGenerate">HmackeyGenerate</a><a href="#variant.HmacData">HmacData</a><a href="#variant.HmacVerify">HmacVerify</a><a href="#variant.Audit">Audit</a><a href="#variant.SshCertify">SshCertify</a><a href="#variant.GetTemplate">GetTemplate</a><a href="#variant.PutTemplate">PutTemplate</a><a href="#variant.Reset">Reset</a><a href="#variant.OtpDecrypt">OtpDecrypt</a><a href="#variant.OtpAeadCreate">OtpAeadCreate</a><a href="#variant.OtpAeadRandom">OtpAeadRandom</a><a href="#variant.OtpAeadRewrapFrom">OtpAeadRewrapFrom</a><a href="#variant.OtpAeadRewrapTo">OtpAeadRewrapTo</a><a href="#variant.Attest">Attest</a><a href="#variant.PutOtpAeadKey">PutOtpAeadKey</a><a href="#variant.GenerateOtpAeadKey">GenerateOtpAeadKey</a><a href="#variant.WrapData">WrapData</a><a href="#variant.UnwrapData">UnwrapData</a><a href="#variant.DeleteOpaque">DeleteOpaque</a><a href="#variant.DeleteAuthkey">DeleteAuthkey</a><a href="#variant.DeleteAsymmetric">DeleteAsymmetric</a><a href="#variant.DeleteWrapKey">DeleteWrapKey</a><a href="#variant.DeleteHmacKey">DeleteHmacKey</a><a href="#variant.DeleteTemplate">DeleteTemplate</a><a href="#variant.DeleteOtpAeadKey">DeleteOtpAeadKey</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Clone">Clone</a><a href="#impl-Copy">Copy</a><a href="#impl-Debug">Debug</a><a href="#impl-PartialEq">PartialEq</a><a href="#impl-From%3CCapability%3E">From&lt;Capability&gt;</a></div><a class="sidebar-title" href="#synthetic-implementations">Auto Trait Implementations</a><div class="sidebar-links"><a href="#impl-Send">Send</a><a href="#impl-Sync">Sync</a></div></div><p class='location'><a href='index.html'>libyubihsm</a></p><script>window.sidebarCurrent = {name: 'Capability', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
+    </nav>
+
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../theme.js"></script>
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>libyubihsm</a>::<wbr><a class="enum" href=''>Capability</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/libyubihsm/types.rs.html#493-540' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum Capability {
+    GetOpaque,
+    PutOpaque,
+    PutAuthKey,
+    PutAsymmetric,
+    AsymmetricGen,
+    AsymmetricSignPkcs,
+    AsymmetricSignPss,
+    AsymmetricSignEcdsa,
+    AsymmetricSignEddsa,
+    AsymmetricDecryptPkcs,
+    AsymmetricDecryptOaep,
+    AsymmetricDecryptEcdh,
+    ExportWrapped,
+    ImportWrapped,
+    PutWrapkey,
+    GenerateWrapkey,
+    ExportUnderWrap,
+    PutOption,
+    GetOption,
+    GetRandomness,
+    PutHmackey,
+    HmackeyGenerate,
+    HmacData,
+    HmacVerify,
+    Audit,
+    SshCertify,
+    GetTemplate,
+    PutTemplate,
+    Reset,
+    OtpDecrypt,
+    OtpAeadCreate,
+    OtpAeadRandom,
+    OtpAeadRewrapFrom,
+    OtpAeadRewrapTo,
+    Attest,
+    PutOtpAeadKey,
+    GenerateOtpAeadKey,
+    WrapData,
+    UnwrapData,
+    DeleteOpaque,
+    DeleteAuthkey,
+    DeleteAsymmetric,
+    DeleteWrapKey,
+    DeleteHmacKey,
+    DeleteTemplate,
+    DeleteOtpAeadKey,
+}</pre><h2 id='variants' class='variants small-section-header'>
+                   Variants<a href='#variants' class='anchor'></a></h2>
+<span id="variant.GetOpaque" class="variant small-section-header"><a href="#variant.GetOpaque" class="anchor field"></a><span id='GetOpaque.v' class='invisible'><code>GetOpaque</code></span></span><span id="variant.PutOpaque" class="variant small-section-header"><a href="#variant.PutOpaque" class="anchor field"></a><span id='PutOpaque.v' class='invisible'><code>PutOpaque</code></span></span><span id="variant.PutAuthKey" class="variant small-section-header"><a href="#variant.PutAuthKey" class="anchor field"></a><span id='PutAuthKey.v' class='invisible'><code>PutAuthKey</code></span></span><span id="variant.PutAsymmetric" class="variant small-section-header"><a href="#variant.PutAsymmetric" class="anchor field"></a><span id='PutAsymmetric.v' class='invisible'><code>PutAsymmetric</code></span></span><span id="variant.AsymmetricGen" class="variant small-section-header"><a href="#variant.AsymmetricGen" class="anchor field"></a><span id='AsymmetricGen.v' class='invisible'><code>AsymmetricGen</code></span></span><span id="variant.AsymmetricSignPkcs" class="variant small-section-header"><a href="#variant.AsymmetricSignPkcs" class="anchor field"></a><span id='AsymmetricSignPkcs.v' class='invisible'><code>AsymmetricSignPkcs</code></span></span><span id="variant.AsymmetricSignPss" class="variant small-section-header"><a href="#variant.AsymmetricSignPss" class="anchor field"></a><span id='AsymmetricSignPss.v' class='invisible'><code>AsymmetricSignPss</code></span></span><span id="variant.AsymmetricSignEcdsa" class="variant small-section-header"><a href="#variant.AsymmetricSignEcdsa" class="anchor field"></a><span id='AsymmetricSignEcdsa.v' class='invisible'><code>AsymmetricSignEcdsa</code></span></span><span id="variant.AsymmetricSignEddsa" class="variant small-section-header"><a href="#variant.AsymmetricSignEddsa" class="anchor field"></a><span id='AsymmetricSignEddsa.v' class='invisible'><code>AsymmetricSignEddsa</code></span></span><span id="variant.AsymmetricDecryptPkcs" class="variant small-section-header"><a href="#variant.AsymmetricDecryptPkcs" class="anchor field"></a><span id='AsymmetricDecryptPkcs.v' class='invisible'><code>AsymmetricDecryptPkcs</code></span></span><span id="variant.AsymmetricDecryptOaep" class="variant small-section-header"><a href="#variant.AsymmetricDecryptOaep" class="anchor field"></a><span id='AsymmetricDecryptOaep.v' class='invisible'><code>AsymmetricDecryptOaep</code></span></span><span id="variant.AsymmetricDecryptEcdh" class="variant small-section-header"><a href="#variant.AsymmetricDecryptEcdh" class="anchor field"></a><span id='AsymmetricDecryptEcdh.v' class='invisible'><code>AsymmetricDecryptEcdh</code></span></span><span id="variant.ExportWrapped" class="variant small-section-header"><a href="#variant.ExportWrapped" class="anchor field"></a><span id='ExportWrapped.v' class='invisible'><code>ExportWrapped</code></span></span><span id="variant.ImportWrapped" class="variant small-section-header"><a href="#variant.ImportWrapped" class="anchor field"></a><span id='ImportWrapped.v' class='invisible'><code>ImportWrapped</code></span></span><span id="variant.PutWrapkey" class="variant small-section-header"><a href="#variant.PutWrapkey" class="anchor field"></a><span id='PutWrapkey.v' class='invisible'><code>PutWrapkey</code></span></span><span id="variant.GenerateWrapkey" class="variant small-section-header"><a href="#variant.GenerateWrapkey" class="anchor field"></a><span id='GenerateWrapkey.v' class='invisible'><code>GenerateWrapkey</code></span></span><span id="variant.ExportUnderWrap" class="variant small-section-header"><a href="#variant.ExportUnderWrap" class="anchor field"></a><span id='ExportUnderWrap.v' class='invisible'><code>ExportUnderWrap</code></span></span><span id="variant.PutOption" class="variant small-section-header"><a href="#variant.PutOption" class="anchor field"></a><span id='PutOption.v' class='invisible'><code>PutOption</code></span></span><span id="variant.GetOption" class="variant small-section-header"><a href="#variant.GetOption" class="anchor field"></a><span id='GetOption.v' class='invisible'><code>GetOption</code></span></span><span id="variant.GetRandomness" class="variant small-section-header"><a href="#variant.GetRandomness" class="anchor field"></a><span id='GetRandomness.v' class='invisible'><code>GetRandomness</code></span></span><span id="variant.PutHmackey" class="variant small-section-header"><a href="#variant.PutHmackey" class="anchor field"></a><span id='PutHmackey.v' class='invisible'><code>PutHmackey</code></span></span><span id="variant.HmackeyGenerate" class="variant small-section-header"><a href="#variant.HmackeyGenerate" class="anchor field"></a><span id='HmackeyGenerate.v' class='invisible'><code>HmackeyGenerate</code></span></span><span id="variant.HmacData" class="variant small-section-header"><a href="#variant.HmacData" class="anchor field"></a><span id='HmacData.v' class='invisible'><code>HmacData</code></span></span><span id="variant.HmacVerify" class="variant small-section-header"><a href="#variant.HmacVerify" class="anchor field"></a><span id='HmacVerify.v' class='invisible'><code>HmacVerify</code></span></span><span id="variant.Audit" class="variant small-section-header"><a href="#variant.Audit" class="anchor field"></a><span id='Audit.v' class='invisible'><code>Audit</code></span></span><span id="variant.SshCertify" class="variant small-section-header"><a href="#variant.SshCertify" class="anchor field"></a><span id='SshCertify.v' class='invisible'><code>SshCertify</code></span></span><span id="variant.GetTemplate" class="variant small-section-header"><a href="#variant.GetTemplate" class="anchor field"></a><span id='GetTemplate.v' class='invisible'><code>GetTemplate</code></span></span><span id="variant.PutTemplate" class="variant small-section-header"><a href="#variant.PutTemplate" class="anchor field"></a><span id='PutTemplate.v' class='invisible'><code>PutTemplate</code></span></span><span id="variant.Reset" class="variant small-section-header"><a href="#variant.Reset" class="anchor field"></a><span id='Reset.v' class='invisible'><code>Reset</code></span></span><span id="variant.OtpDecrypt" class="variant small-section-header"><a href="#variant.OtpDecrypt" class="anchor field"></a><span id='OtpDecrypt.v' class='invisible'><code>OtpDecrypt</code></span></span><span id="variant.OtpAeadCreate" class="variant small-section-header"><a href="#variant.OtpAeadCreate" class="anchor field"></a><span id='OtpAeadCreate.v' class='invisible'><code>OtpAeadCreate</code></span></span><span id="variant.OtpAeadRandom" class="variant small-section-header"><a href="#variant.OtpAeadRandom" class="anchor field"></a><span id='OtpAeadRandom.v' class='invisible'><code>OtpAeadRandom</code></span></span><span id="variant.OtpAeadRewrapFrom" class="variant small-section-header"><a href="#variant.OtpAeadRewrapFrom" class="anchor field"></a><span id='OtpAeadRewrapFrom.v' class='invisible'><code>OtpAeadRewrapFrom</code></span></span><span id="variant.OtpAeadRewrapTo" class="variant small-section-header"><a href="#variant.OtpAeadRewrapTo" class="anchor field"></a><span id='OtpAeadRewrapTo.v' class='invisible'><code>OtpAeadRewrapTo</code></span></span><span id="variant.Attest" class="variant small-section-header"><a href="#variant.Attest" class="anchor field"></a><span id='Attest.v' class='invisible'><code>Attest</code></span></span><span id="variant.PutOtpAeadKey" class="variant small-section-header"><a href="#variant.PutOtpAeadKey" class="anchor field"></a><span id='PutOtpAeadKey.v' class='invisible'><code>PutOtpAeadKey</code></span></span><span id="variant.GenerateOtpAeadKey" class="variant small-section-header"><a href="#variant.GenerateOtpAeadKey" class="anchor field"></a><span id='GenerateOtpAeadKey.v' class='invisible'><code>GenerateOtpAeadKey</code></span></span><span id="variant.WrapData" class="variant small-section-header"><a href="#variant.WrapData" class="anchor field"></a><span id='WrapData.v' class='invisible'><code>WrapData</code></span></span><span id="variant.UnwrapData" class="variant small-section-header"><a href="#variant.UnwrapData" class="anchor field"></a><span id='UnwrapData.v' class='invisible'><code>UnwrapData</code></span></span><span id="variant.DeleteOpaque" class="variant small-section-header"><a href="#variant.DeleteOpaque" class="anchor field"></a><span id='DeleteOpaque.v' class='invisible'><code>DeleteOpaque</code></span></span><span id="variant.DeleteAuthkey" class="variant small-section-header"><a href="#variant.DeleteAuthkey" class="anchor field"></a><span id='DeleteAuthkey.v' class='invisible'><code>DeleteAuthkey</code></span></span><span id="variant.DeleteAsymmetric" class="variant small-section-header"><a href="#variant.DeleteAsymmetric" class="anchor field"></a><span id='DeleteAsymmetric.v' class='invisible'><code>DeleteAsymmetric</code></span></span><span id="variant.DeleteWrapKey" class="variant small-section-header"><a href="#variant.DeleteWrapKey" class="anchor field"></a><span id='DeleteWrapKey.v' class='invisible'><code>DeleteWrapKey</code></span></span><span id="variant.DeleteHmacKey" class="variant small-section-header"><a href="#variant.DeleteHmacKey" class="anchor field"></a><span id='DeleteHmacKey.v' class='invisible'><code>DeleteHmacKey</code></span></span><span id="variant.DeleteTemplate" class="variant small-section-header"><a href="#variant.DeleteTemplate" class="anchor field"></a><span id='DeleteTemplate.v' class='invisible'><code>DeleteTemplate</code></span></span><span id="variant.DeleteOtpAeadKey" class="variant small-section-header"><a href="#variant.DeleteOtpAeadKey" class="anchor field"></a><span id='DeleteOtpAeadKey.v' class='invisible'><code>DeleteOtpAeadKey</code></span></span>
+            <h2 id='implementations' class='small-section-header'>
+              Trait Implementations<a href='#implementations' class='anchor'></a>
+            </h2>
+            <div id='implementations-list'>
+        <h3 id='impl-Clone' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a></code><a href='#impl-Clone' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#492' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#492' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Self)</code></span><span class='out-of-band'><div class='ghost'></div><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/clone.rs.html#117-119' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 id='impl-Copy' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> for <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a></code><a href='#impl-Copy' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#492' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 id='impl-Debug' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a></code><a href='#impl-Debug' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#492' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#492' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></p>
+</div></div><h3 id='impl-PartialEq' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a></code><a href='#impl-PartialEq' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#492' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#492' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Rhs) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/cmp.rs.html#121' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 id='impl-From%3CCapability%3E' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a>&gt; for <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code><a href='#impl-From%3CCapability%3E' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#542-593' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from' class="method"><span id='from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(cap: <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#543-592' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 id='impl-From%3CCapability%3E-1' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a>&gt; for <a class="struct" href="../libyubihsm/struct.yh_capabilities.html" title="struct libyubihsm::yh_capabilities">yh_capabilities</a></code><a href='#impl-From%3CCapability%3E-1' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#595-612' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-1' class="method"><span id='from.v-1' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(cap: <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/libyubihsm/types.rs.html#596-611' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div></div>
+                <h2 id='synthetic-implementations' class='small-section-header'>
+                  Auto Trait Implementations<a href='#synthetic-implementations' class='anchor'></a>
+                </h2>
+                <div id='synthetic-implementations-list'>
+            <h3 id='impl-Send' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a></code><a href='#impl-Send' class='anchor'></a></span><span class='out-of-band'></span></h3>
+<div class='impl-items'></div><h3 id='impl-Sync' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="enum" href="../libyubihsm/enum.Capability.html" title="enum libyubihsm::Capability">Capability</a></code><a href='#impl-Sync' class='anchor'></a></span><span class='out-of-band'></span></h3>
+<div class='impl-items'></div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt><kbd>?</kbd></dt>
+                    <dd>Show this help dialog</dd>
+                    <dt><kbd>S</kbd></dt>
+                    <dd>Focus the search field</dd>
+                    <dt><kbd>↑</kbd></dt>
+                    <dd>Move up in search results</dd>
+                    <dt><kbd>↓</kbd></dt>
+                    <dd>Move down in search results</dd>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
+                    <dd>Go to active search result</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "libyubihsm";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
