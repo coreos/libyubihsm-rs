@@ -2,6 +2,12 @@
 name = "libyubihsm"
 version = "0.1.0"
 authors = ["James Forcier <james.forcier@coreos.com>"]
+description = "FFI bindings to libyubihsm.so"
+repository = "https://github.com/coreos/libyubihsm-rs"
+readme = "README.md"
+keywords = ["yubihsm", "hsm"]
+categories = ["external-ffi-bindings", "cryptography", "hardware-support"]
+license = "Apache-2.0"
 
 [build-dependencies]
 bindgen = "0.32"
