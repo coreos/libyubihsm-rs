@@ -495,6 +495,7 @@ pub enum Capability {
     DeleteHmacKey,
     DeleteTemplate,
     DeleteOtpAeadKey,
+    Unknown,
 }
 
 impl From<Capability> for String {
@@ -546,6 +547,64 @@ impl From<Capability> for String {
             Capability::DeleteHmacKey => String::from("delete_hmac_key"),
             Capability::DeleteTemplate => String::from("delete_template"),
             Capability::DeleteOtpAeadKey => String::from("delete_otp_aead_key"),
+            Capability::Unknown => String::from("unknown"),
+        }
+    }
+}
+
+impl<T> From<T> for Capability
+where
+    T: AsRef<str>,
+{
+    fn from(s: T) -> Capability {
+        match s.as_ref() {
+            "get_opaque" => Capability::GetOpaque,
+            "put_opaque" => Capability::PutOpaque,
+            "put_authkey" => Capability::PutAuthKey,
+            "put_asymmetric" => Capability::PutAsymmetric,
+            "asymmetric_gen" => Capability::AsymmetricGen,
+            "asymmetric_sign_pkcs" => Capability::AsymmetricSignPkcs,
+            "asymmetric_sign_pss" => Capability::AsymmetricSignPss,
+            "asymmetric_sign_ecdsa" => Capability::AsymmetricSignEcdsa,
+            "asymmetric_sign_eddsa" => Capability::AsymmetricSignEddsa,
+            "asymmetric_decrypt_pkcs" => Capability::AsymmetricDecryptPkcs,
+            "asymmetric_decrypt_oaep" => Capability::AsymmetricDecryptOaep,
+            "asymmetric_decrypt_ecdh" => Capability::AsymmetricDecryptEcdh,
+            "export_wrapped" => Capability::ExportWrapped,
+            "import_wrapped" => Capability::ImportWrapped,
+            "put_wrapkey" => Capability::PutWrapkey,
+            "generate_wrapkey" => Capability::GenerateWrapkey,
+            "export_under_wrap" => Capability::ExportUnderWrap,
+            "put_option" => Capability::PutOption,
+            "get_option" => Capability::GetOption,
+            "get_randomness" => Capability::GetRandomness,
+            "put_hmackey" => Capability::PutHmackey,
+            "hmackey_generate" => Capability::HmackeyGenerate,
+            "hmac_data" => Capability::HmacData,
+            "hmac_verify" => Capability::HmacVerify,
+            "audit" => Capability::Audit,
+            "ssh_certify" => Capability::SshCertify,
+            "get_template" => Capability::GetTemplate,
+            "put_template" => Capability::PutTemplate,
+            "reset" => Capability::Reset,
+            "otp_decrypt" => Capability::OtpDecrypt,
+            "otp_aead_create" => Capability::OtpAeadCreate,
+            "otp_aead_random" => Capability::OtpAeadRandom,
+            "otp_aead_rewrap_from" => Capability::OtpAeadRewrapFrom,
+            "otp_aead_rewrap_to" => Capability::OtpAeadRewrapTo,
+            "attest" => Capability::Attest,
+            "put_otp_aead_key" => Capability::PutOtpAeadKey,
+            "generate_otp_aead_key" => Capability::GenerateOtpAeadKey,
+            "wrap_data" => Capability::WrapData,
+            "unwrap_data" => Capability::UnwrapData,
+            "delete_opaque" => Capability::DeleteOpaque,
+            "delete_authkey" => Capability::DeleteAuthkey,
+            "delete_asymmetric" => Capability::DeleteAsymmetric,
+            "delete_wrap_key" => Capability::DeleteWrapKey,
+            "delete_hmac_key" => Capability::DeleteHmacKey,
+            "delete_template" => Capability::DeleteTemplate,
+            "delete_otp_aead_key" => Capability::DeleteOtpAeadKey,
+            _ => Capability::Unknown,
         }
     }
 }
