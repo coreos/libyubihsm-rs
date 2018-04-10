@@ -1039,3 +1039,47 @@ impl From<LogEntry> for yh_log_entry {
         }
     }
 }
+
+#[derive(Clone, Debug)]
+pub struct ObjectInfo {
+    pub capabilities: Vec<Capability>,
+    pub id: u16,
+    pub length: u16,
+    pub domains: Vec<Domain>,
+    pub object_type: ObjectType,
+    pub algorithm: Option<Algorithm>,
+    pub sequence: u8,
+    pub origin: u8,
+    pub label: String,
+    pub delegated_capabilities: Vec<Capability>,
+    _priv: (),
+}
+
+impl ObjectInfo {
+    // TODO(csssuf): convert this to std::convert::TryFrom when rustc 1.26.0 is released
+    pub(crate) fn try_from_yh_object_descriptor(
+        o: yh_object_descriptor,
+    ) -> Result<ObjectInfo, Error> {
+        Ok(ObjectInfo {
+            capabilities: Capability::try_from_yh_capabilities(&o.capabilities)?,
+            id: o.id,
+            length: o.len,
+            domains: DomainParam(o.domains).into(),
+            object_type: ObjectType::from(o.type_),
+            algorithm: if o.algorithm == 0 {
+                None
+            } else {
+                Some(Algorithm::from(o.algorithm))
+            },
+            sequence: o.sequence,
+            origin: o.origin,
+            label: unsafe { CStr::from_ptr(o.label.as_ptr()) }
+                .to_string_lossy()
+                .to_string(),
+            delegated_capabilities: Capability::try_from_yh_capabilities(
+                &o.delegated_capabilities,
+            )?,
+            _priv: (),
+        })
+    }
+}
