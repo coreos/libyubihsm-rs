@@ -655,6 +655,41 @@ where
     }
 }
 
+impl Capability {
+    /// Convert a library-created `yh_capabilities` blob to a Vec<Capability>. The
+    /// `yh_capabilities` layout is opaque and the only other library-provided way of representing
+    /// capabilities is by moving strings around, so we want to avoid that as much as possible.
+    //TODO(csssuf): move this to std::convert::TryFrom when rustc 1.26.0 is released
+    pub(crate) fn try_from_yh_capabilities(
+        caps: &yh_capabilities,
+    ) -> Result<Vec<Capability>, Error> {
+        // As there are currently fewer than 64 capabilities, this _should_ be sufficient.
+        // Unfortunately the published docs for libyubihsm make no mention of how any of this
+        // memory is managed, nor are there constants for maximum sizes, so we have to resort to
+        // something like this.
+        let mut lib_cap_strs: [*const c_char; 64] = [ptr::null(); 64];
+        let mut n_cap_strs: usize = 64;
+
+        unsafe {
+            let ret = ReturnCode::from(yh_num_to_capabilities(
+                caps,
+                lib_cap_strs.as_mut_ptr(),
+                &mut n_cap_strs,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!("yh_num_to_capabilities failed: {}", ret);
+            }
+        }
+
+        lib_cap_strs[..n_cap_strs]
+            .into_iter()
+            .map(|x| unsafe { CStr::from_ptr(*x).to_str() }.map(Capability::from))
+            .collect::<Result<Vec<_>, ::std::str::Utf8Error>>()
+            .map_err(|e| e.into())
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct DeviceInfo {
     pub major_version: u8,
