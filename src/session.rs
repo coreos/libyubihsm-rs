@@ -35,8 +35,8 @@ macro_rules! generate_key {
         ) -> Result<(), Error> {
             let mut key_id_ptr = key_id;
             let c_label = CString::new(label)?;
-            let lib_domains = DomainParam::from(Vec::from(domains));
-            let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+            let lib_domains = DomainParam::from(domains);
+            let lib_caps = yh_capabilities::from(capabilities);
 
             unsafe {
                 match ReturnCode::from(yubihsm_sys::$yh_func(
@@ -289,9 +289,9 @@ impl Session {
     ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
-        let lib_delegated_caps = yh_capabilities::from(Vec::from(delegated_capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
+        let lib_delegated_caps = yh_capabilities::from(delegated_capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_generate_key_wrap(
@@ -320,8 +320,8 @@ impl Session {
     ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_ec(
@@ -350,8 +350,8 @@ impl Session {
     ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_ed(
@@ -380,8 +380,8 @@ impl Session {
     ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_hmac(
@@ -414,8 +414,8 @@ impl Session {
     ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_rsa(
@@ -448,9 +448,9 @@ impl Session {
     ) -> Result<(), Error> {
         let mut key_id_ptr = key_id;
         let c_label = CString::new(label)?;
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
-        let lib_delegated_caps = yh_capabilities::from(Vec::from(delegated_capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
+        let lib_delegated_caps = yh_capabilities::from(delegated_capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_key_wrap(
@@ -483,9 +483,9 @@ impl Session {
         let c_label = CString::new(label)?;
         let c_pass = CString::new(password)?;
         let c_pass_slice = c_pass.as_bytes();
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
-        let lib_delegated_caps = yh_capabilities::from(Vec::from(delegated_capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
+        let lib_delegated_caps = yh_capabilities::from(delegated_capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_authkey(
@@ -515,8 +515,8 @@ impl Session {
     ) -> Result<(), Error> {
         let mut obj_id_ptr = object_id;
         let c_label = CString::new(label)?;
-        let lib_domains = DomainParam::from(Vec::from(domains));
-        let lib_caps = yh_capabilities::from(Vec::from(capabilities));
+        let lib_domains = DomainParam::from(domains);
+        let lib_caps = yh_capabilities::from(capabilities);
 
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_import_opaque(

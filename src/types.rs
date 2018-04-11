@@ -43,9 +43,9 @@ impl From<Domain> for DomainParam {
     }
 }
 
-impl<T> From<T> for DomainParam
+impl<'a, T> From<T> for DomainParam
 where
-    T: AsRef<[Domain]> + IntoIterator<Item = Domain>,
+    T: IntoIterator<Item = &'a Domain>,
 {
     fn from(doms: T) -> Self {
         let mut out: u16 = 0;
@@ -500,7 +500,13 @@ pub enum Capability {
 
 impl From<Capability> for String {
     fn from(cap: Capability) -> Self {
-        match cap {
+        String::from(&cap)
+    }
+}
+
+impl<'a> From<&'a Capability> for String {
+    fn from(cap: &'a Capability) -> Self {
+        match *cap {
             Capability::GetOpaque => String::from("get_opaque"),
             Capability::PutOpaque => String::from("put_opaque"),
             Capability::PutAuthKey => String::from("put_authkey"),
@@ -628,9 +634,9 @@ impl From<Capability> for yh_capabilities {
     }
 }
 
-impl<T> From<T> for yh_capabilities
+impl<'a, T> From<T> for yh_capabilities
 where
-    T: AsRef<[Capability]> + IntoIterator<Item = Capability>,
+    T: IntoIterator<Item = &'a Capability>,
 {
     fn from(caps: T) -> Self {
         let joined_caps = caps.into_iter()

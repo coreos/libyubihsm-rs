@@ -31,7 +31,7 @@ fn domain_domainparam() {
 #[test]
 fn domains_to_domainparam() {
     let orig_domains = vec![Domain(1), Domain(3)];
-    let domain_param = DomainParam::from(orig_domains.clone());
+    let domain_param = DomainParam::from(&orig_domains.clone());
     let new_domains: Vec<Domain> = domain_param.into();
     assert_eq!(new_domains.len(), 2);
     assert_eq!(orig_domains, new_domains);
