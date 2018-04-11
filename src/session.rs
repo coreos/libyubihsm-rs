@@ -15,11 +15,14 @@
 use types::*;
 
 use failure::Error;
-use yubihsm_sys::{self, yh_capabilities, yh_session};
+use yubihsm_sys::{self, yh_algorithm, yh_capabilities, yh_object_descriptor, yh_object_type,
+                  yh_session};
 
 use std::cell::Cell;
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 use std::ops::Deref;
+use std::os::raw::c_char;
+use std::ptr;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicPtr, Ordering};
 
@@ -99,6 +102,50 @@ impl Session {
             this: Arc::new(SessionPtr(AtomicPtr::new(this))),
             _unsync_marker: Cell::new(()),
         }
+    }
+
+    pub fn list_objects(&self) -> ListObjectsQuery {
+        ListObjectsQuery::new(&self)
+    }
+
+    fn list_objects_query(
+        &self,
+        id: u16,
+        object_type: yh_object_type,
+        domains: DomainParam,
+        capabilities: yh_capabilities,
+        algorithm: yh_algorithm,
+        label: *const c_char,
+        limit: usize,
+    ) -> Result<Vec<ObjectInfo>, Error> {
+        let mut objects: Vec<yh_object_descriptor> = Vec::with_capacity(limit);
+        let mut n_objects = objects.capacity();
+
+        let rc = unsafe {
+            ReturnCode::from(yubihsm_sys::yh_util_list_objects(
+                self.this.load(Ordering::Relaxed),
+                id,
+                object_type,
+                domains.0,
+                &capabilities,
+                algorithm,
+                label,
+                objects.as_mut_ptr(),
+                &mut n_objects,
+            ))
+        };
+
+        if rc != ReturnCode::Success {
+            bail!("yh_util_list_objects failed: {}", rc);
+        }
+
+        unsafe { objects.set_len(n_objects) };
+        objects.shrink_to_fit();
+
+        objects
+            .into_iter()
+            .map(ObjectInfo::try_from_yh_object_descriptor)
+            .collect::<Result<Vec<_>, Error>>()
     }
 
     pub fn delete_object(&self, obj_id: u16, obj_type: ObjectType) -> Result<(), Error> {
@@ -626,5 +673,107 @@ impl Session {
                 e => bail!("util_set_log_index failed: {}", e),
             }
         }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ListObjectsQuery<'a> {
+    session: &'a Session,
+    id: Option<u16>,
+    object_type: Option<ObjectType>,
+    domains: Option<&'a [Domain]>,
+    capabilities: Option<&'a [Capability]>,
+    algorithm: Option<Algorithm>,
+    label: Option<&'a str>,
+    limit: Option<usize>,
+}
+
+impl<'a> ListObjectsQuery<'a> {
+    fn new(session: &'a Session) -> ListObjectsQuery {
+        ListObjectsQuery {
+            session,
+            id: None,
+            object_type: None,
+            domains: None,
+            capabilities: None,
+            algorithm: None,
+            label: None,
+            limit: None,
+        }
+    }
+
+    pub fn id(self, id: u16) -> ListObjectsQuery<'a> {
+        ListObjectsQuery {
+            id: Some(id),
+            ..self
+        }
+    }
+
+    pub fn object_type(self, object_type: ObjectType) -> ListObjectsQuery<'a> {
+        ListObjectsQuery {
+            object_type: Some(object_type),
+            ..self
+        }
+    }
+
+    pub fn domains(self, domains: &'a [Domain]) -> ListObjectsQuery<'a> {
+        ListObjectsQuery {
+            domains: Some(domains),
+            ..self
+        }
+    }
+
+    pub fn capabilities(self, capabilities: &'a [Capability]) -> ListObjectsQuery<'a> {
+        ListObjectsQuery {
+            capabilities: Some(capabilities),
+            ..self
+        }
+    }
+
+    pub fn algorithm(self, algorithm: Algorithm) -> ListObjectsQuery<'a> {
+        ListObjectsQuery {
+            algorithm: Some(algorithm),
+            ..self
+        }
+    }
+
+    pub fn label(self, label: &'a str) -> ListObjectsQuery<'a> {
+        ListObjectsQuery {
+            label: Some(label),
+            ..self
+        }
+    }
+
+    pub fn limit(self, limit: usize) -> ListObjectsQuery<'a> {
+        ListObjectsQuery {
+            limit: Some(limit),
+            ..self
+        }
+    }
+
+    pub fn execute(self) -> Result<Vec<ObjectInfo>, Error> {
+        let id = self.id.unwrap_or(0);
+        let object_type: yh_object_type = self.object_type.map(|x| x.into()).unwrap_or(0);
+        let domains = self.domains
+            .map(DomainParam::from)
+            .unwrap_or(DomainParam(0));
+        let capabilities = self.capabilities
+            .map(yh_capabilities::from)
+            .unwrap_or(yh_capabilities::from(&[]));
+        let algorithm = self.algorithm.map(yh_algorithm::from).unwrap_or(0);
+        let label = self.label
+            .map(|l| CStr::from_bytes_with_nul(l.as_bytes()).map(|c| c.as_ptr()))
+            .unwrap_or(Ok(ptr::null()))?;
+        let limit = self.limit.unwrap_or(256);
+
+        self.session.list_objects_query(
+            id,
+            object_type,
+            domains,
+            capabilities,
+            algorithm,
+            label,
+            limit,
+        )
     }
 }
