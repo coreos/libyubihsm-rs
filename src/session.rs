@@ -148,6 +148,40 @@ impl Session {
             .collect::<Result<Vec<_>, Error>>()
     }
 
+    pub fn get_object_info(&self, id: u16, object_type: ObjectType) -> Result<ObjectInfo, Error> {
+        let mut object = yh_object_descriptor {
+            capabilities: yh_capabilities {
+                capabilities: [0; 8],
+            },
+            id: 0,
+            len: 0,
+            domains: 0,
+            type_: 0,
+            algorithm: 0,
+            sequence: 0,
+            origin: 0,
+            label: [0; 41],
+            delegated_capabilities: yh_capabilities {
+                capabilities: [0; 8],
+            },
+        };
+
+        let rc = unsafe {
+            ReturnCode::from(yubihsm_sys::yh_util_get_object_info(
+                self.this.load(Ordering::Relaxed),
+                id,
+                object_type.into(),
+                &mut object,
+            ))
+        };
+
+        if rc != ReturnCode::Success {
+            bail!("yh_util_get_object_info failed: {}", rc);
+        }
+
+        ObjectInfo::try_from_yh_object_descriptor(object)
+    }
+
     pub fn delete_object(&self, obj_id: u16, obj_type: ObjectType) -> Result<(), Error> {
         unsafe {
             match ReturnCode::from(yubihsm_sys::yh_util_delete_object(
