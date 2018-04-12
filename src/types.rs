@@ -106,6 +106,7 @@ impl From<DomainParam> for Vec<Domain> {
             cstring
                 .to_string_lossy()
                 .split(':')
+                .filter(|d| *d != "")
                 .map(|d| d.parse::<u8>().unwrap())
                 .map(|d| Domain::new(d).unwrap())
                 .collect()
