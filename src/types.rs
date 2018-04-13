@@ -37,50 +37,20 @@ impl Domain {
     }
 }
 
-impl From<Domain> for String {
-    fn from(dom: Domain) -> Self {
-        format!("{}", dom.0)
-    }
-}
-
 impl From<Domain> for DomainParam {
     fn from(dom: Domain) -> Self {
-        let mut out: u16 = 0;
-        let dom_str = CString::new(format!("{}", dom.0))
-            .unwrap_or_else(|_| panic!("couldn't make CString from Domain"));
-
-        unsafe {
-            let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
-
-            if ret != ReturnCode::Success {
-                panic!("parse_domains failed: {}", ret);
-            }
-        }
-
-        DomainParam(out)
+        DomainParam(1u16 << (dom.0 - 1))
     }
 }
 
-impl<T> From<T> for DomainParam
+impl<'a, T> From<T> for DomainParam
 where
-    T: AsRef<[Domain]> + IntoIterator<Item = Domain>,
+    T: IntoIterator<Item = &'a Domain>,
 {
     fn from(doms: T) -> Self {
         let mut out: u16 = 0;
-        let joined_doms = doms.into_iter()
-            .map(String::from)
-            .collect::<Vec<String>>()
-            .join(",");
-
-        let dom_str = CString::new(joined_doms)
-            .unwrap_or_else(|_| panic!("couldn't make CString from Domains"));
-
-        unsafe {
-            let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
-
-            if ret != ReturnCode::Success {
-                panic!("parse_domains failed: {}", ret);
-            }
+        for domain in doms.into_iter() {
+            out |= 1u16 << (domain.0 - 1);
         }
 
         DomainParam(out)
@@ -89,27 +59,15 @@ where
 
 impl From<DomainParam> for Vec<Domain> {
     fn from(dom_param: DomainParam) -> Self {
-        let cstring_contents: Vec<u8> = Vec::with_capacity(40);
+        let mut out = Vec::new();
 
-        unsafe {
-            let raw_cstring = CString::from_vec_unchecked(cstring_contents).into_raw();
-            let ret = ReturnCode::from(yh_domains_to_string(dom_param.0, raw_cstring, 40));
-
-            if ret != ReturnCode::Success {
-                panic!("domains_to_string failed: {}", ret);
+        for domain in 0..16 {
+            if dom_param.0 & (1u16 << domain) != 0 {
+                out.push(Domain(domain + 1));
             }
-
-            let cstring = CString::from_raw(raw_cstring);
-
-            // If libyubihsm is giving us back invalid domains, there's not much we can do about
-            // it, so unwrapping is okay here.
-            cstring
-                .to_string_lossy()
-                .split(':')
-                .map(|d| d.parse::<u8>().unwrap())
-                .map(|d| Domain::new(d).unwrap())
-                .collect()
         }
+
+        out
     }
 }
 
@@ -537,11 +495,18 @@ pub enum Capability {
     DeleteHmacKey,
     DeleteTemplate,
     DeleteOtpAeadKey,
+    Unknown,
 }
 
 impl From<Capability> for String {
     fn from(cap: Capability) -> Self {
-        match cap {
+        String::from(&cap)
+    }
+}
+
+impl<'a> From<&'a Capability> for String {
+    fn from(cap: &'a Capability) -> Self {
+        match *cap {
             Capability::GetOpaque => String::from("get_opaque"),
             Capability::PutOpaque => String::from("put_opaque"),
             Capability::PutAuthKey => String::from("put_authkey"),
@@ -588,6 +553,64 @@ impl From<Capability> for String {
             Capability::DeleteHmacKey => String::from("delete_hmac_key"),
             Capability::DeleteTemplate => String::from("delete_template"),
             Capability::DeleteOtpAeadKey => String::from("delete_otp_aead_key"),
+            Capability::Unknown => String::from("unknown"),
+        }
+    }
+}
+
+impl<T> From<T> for Capability
+where
+    T: AsRef<str>,
+{
+    fn from(s: T) -> Capability {
+        match s.as_ref() {
+            "get_opaque" => Capability::GetOpaque,
+            "put_opaque" => Capability::PutOpaque,
+            "put_authkey" => Capability::PutAuthKey,
+            "put_asymmetric" => Capability::PutAsymmetric,
+            "asymmetric_gen" => Capability::AsymmetricGen,
+            "asymmetric_sign_pkcs" => Capability::AsymmetricSignPkcs,
+            "asymmetric_sign_pss" => Capability::AsymmetricSignPss,
+            "asymmetric_sign_ecdsa" => Capability::AsymmetricSignEcdsa,
+            "asymmetric_sign_eddsa" => Capability::AsymmetricSignEddsa,
+            "asymmetric_decrypt_pkcs" => Capability::AsymmetricDecryptPkcs,
+            "asymmetric_decrypt_oaep" => Capability::AsymmetricDecryptOaep,
+            "asymmetric_decrypt_ecdh" => Capability::AsymmetricDecryptEcdh,
+            "export_wrapped" => Capability::ExportWrapped,
+            "import_wrapped" => Capability::ImportWrapped,
+            "put_wrapkey" => Capability::PutWrapkey,
+            "generate_wrapkey" => Capability::GenerateWrapkey,
+            "export_under_wrap" => Capability::ExportUnderWrap,
+            "put_option" => Capability::PutOption,
+            "get_option" => Capability::GetOption,
+            "get_randomness" => Capability::GetRandomness,
+            "put_hmackey" => Capability::PutHmackey,
+            "hmackey_generate" => Capability::HmackeyGenerate,
+            "hmac_data" => Capability::HmacData,
+            "hmac_verify" => Capability::HmacVerify,
+            "audit" => Capability::Audit,
+            "ssh_certify" => Capability::SshCertify,
+            "get_template" => Capability::GetTemplate,
+            "put_template" => Capability::PutTemplate,
+            "reset" => Capability::Reset,
+            "otp_decrypt" => Capability::OtpDecrypt,
+            "otp_aead_create" => Capability::OtpAeadCreate,
+            "otp_aead_random" => Capability::OtpAeadRandom,
+            "otp_aead_rewrap_from" => Capability::OtpAeadRewrapFrom,
+            "otp_aead_rewrap_to" => Capability::OtpAeadRewrapTo,
+            "attest" => Capability::Attest,
+            "put_otp_aead_key" => Capability::PutOtpAeadKey,
+            "generate_otp_aead_key" => Capability::GenerateOtpAeadKey,
+            "wrap_data" => Capability::WrapData,
+            "unwrap_data" => Capability::UnwrapData,
+            "delete_opaque" => Capability::DeleteOpaque,
+            "delete_authkey" => Capability::DeleteAuthkey,
+            "delete_asymmetric" => Capability::DeleteAsymmetric,
+            "delete_wrap_key" => Capability::DeleteWrapKey,
+            "delete_hmac_key" => Capability::DeleteHmacKey,
+            "delete_template" => Capability::DeleteTemplate,
+            "delete_otp_aead_key" => Capability::DeleteOtpAeadKey,
+            _ => Capability::Unknown,
         }
     }
 }
@@ -611,9 +634,9 @@ impl From<Capability> for yh_capabilities {
     }
 }
 
-impl<T> From<T> for yh_capabilities
+impl<'a, T> From<T> for yh_capabilities
 where
-    T: AsRef<[Capability]> + IntoIterator<Item = Capability>,
+    T: IntoIterator<Item = &'a Capability>,
 {
     fn from(caps: T) -> Self {
         let joined_caps = caps.into_iter()
@@ -635,6 +658,41 @@ where
         }
 
         capability
+    }
+}
+
+impl Capability {
+    /// Convert a library-created `yh_capabilities` blob to a Vec<Capability>. The
+    /// `yh_capabilities` layout is opaque and the only other library-provided way of representing
+    /// capabilities is by moving strings around, so we want to avoid that as much as possible.
+    //TODO(csssuf): move this to std::convert::TryFrom when rustc 1.26.0 is released
+    pub(crate) fn try_from_yh_capabilities(
+        caps: &yh_capabilities,
+    ) -> Result<Vec<Capability>, Error> {
+        // As there are currently fewer than 64 capabilities, this _should_ be sufficient.
+        // Unfortunately the published docs for libyubihsm make no mention of how any of this
+        // memory is managed, nor are there constants for maximum sizes, so we have to resort to
+        // something like this.
+        let mut lib_cap_strs: [*const c_char; 64] = [ptr::null(); 64];
+        let mut n_cap_strs: usize = 64;
+
+        unsafe {
+            let ret = ReturnCode::from(yh_num_to_capabilities(
+                caps,
+                lib_cap_strs.as_mut_ptr(),
+                &mut n_cap_strs,
+            ));
+
+            if ret != ReturnCode::Success {
+                bail!("yh_num_to_capabilities failed: {}", ret);
+            }
+        }
+
+        lib_cap_strs[..n_cap_strs]
+            .into_iter()
+            .map(|x| unsafe { CStr::from_ptr(*x).to_str() }.map(Capability::from))
+            .collect::<Result<Vec<_>, ::std::str::Utf8Error>>()
+            .map_err(|e| e.into())
     }
 }
 
@@ -985,5 +1043,49 @@ impl From<LogEntry> for yh_log_entry {
             systick: entry.systick,
             digest: digest_arr,
         }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ObjectInfo {
+    pub capabilities: Vec<Capability>,
+    pub id: u16,
+    pub length: u16,
+    pub domains: Vec<Domain>,
+    pub object_type: ObjectType,
+    pub algorithm: Option<Algorithm>,
+    pub sequence: u8,
+    pub origin: u8,
+    pub label: String,
+    pub delegated_capabilities: Vec<Capability>,
+    _priv: (),
+}
+
+impl ObjectInfo {
+    // TODO(csssuf): convert this to std::convert::TryFrom when rustc 1.26.0 is released
+    pub(crate) fn try_from_yh_object_descriptor(
+        o: yh_object_descriptor,
+    ) -> Result<ObjectInfo, Error> {
+        Ok(ObjectInfo {
+            capabilities: Capability::try_from_yh_capabilities(&o.capabilities)?,
+            id: o.id,
+            length: o.len,
+            domains: DomainParam(o.domains).into(),
+            object_type: ObjectType::from(o.type_),
+            algorithm: if o.algorithm == 0 {
+                None
+            } else {
+                Some(Algorithm::from(o.algorithm))
+            },
+            sequence: o.sequence,
+            origin: o.origin,
+            label: unsafe { CStr::from_ptr(o.label.as_ptr()) }
+                .to_string_lossy()
+                .to_string(),
+            delegated_capabilities: Capability::try_from_yh_capabilities(
+                &o.delegated_capabilities,
+            )?,
+            _priv: (),
+        })
     }
 }
