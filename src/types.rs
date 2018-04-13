@@ -37,27 +37,9 @@ impl Domain {
     }
 }
 
-impl From<Domain> for String {
-    fn from(dom: Domain) -> Self {
-        format!("{}", dom.0)
-    }
-}
-
 impl From<Domain> for DomainParam {
     fn from(dom: Domain) -> Self {
-        let mut out: u16 = 0;
-        let dom_str = CString::new(format!("{}", dom.0))
-            .unwrap_or_else(|_| panic!("couldn't make CString from Domain"));
-
-        unsafe {
-            let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
-
-            if ret != ReturnCode::Success {
-                panic!("parse_domains failed: {}", ret);
-            }
-        }
-
-        DomainParam(out)
+        DomainParam(1u16 << (dom.0 - 1))
     }
 }
 
@@ -67,20 +49,8 @@ where
 {
     fn from(doms: T) -> Self {
         let mut out: u16 = 0;
-        let joined_doms = doms.into_iter()
-            .map(String::from)
-            .collect::<Vec<String>>()
-            .join(",");
-
-        let dom_str = CString::new(joined_doms)
-            .unwrap_or_else(|_| panic!("couldn't make CString from Domains"));
-
-        unsafe {
-            let ret = ReturnCode::from(yh_parse_domains(dom_str.as_ptr(), &mut out));
-
-            if ret != ReturnCode::Success {
-                panic!("parse_domains failed: {}", ret);
-            }
+        for domain in doms.into_iter() {
+            out |= 1u16 << (domain.0 - 1);
         }
 
         DomainParam(out)
@@ -89,28 +59,15 @@ where
 
 impl From<DomainParam> for Vec<Domain> {
     fn from(dom_param: DomainParam) -> Self {
-        let cstring_contents: Vec<u8> = Vec::with_capacity(40);
+        let mut out = Vec::new();
 
-        unsafe {
-            let raw_cstring = CString::from_vec_unchecked(cstring_contents).into_raw();
-            let ret = ReturnCode::from(yh_domains_to_string(dom_param.0, raw_cstring, 40));
-
-            if ret != ReturnCode::Success {
-                panic!("domains_to_string failed: {}", ret);
+        for domain in 0..16 {
+            if dom_param.0 & (1u16 << domain) != 0 {
+                out.push(Domain(domain + 1));
             }
-
-            let cstring = CString::from_raw(raw_cstring);
-
-            // If libyubihsm is giving us back invalid domains, there's not much we can do about
-            // it, so unwrapping is okay here.
-            cstring
-                .to_string_lossy()
-                .split(':')
-                .filter(|d| *d != "")
-                .map(|d| d.parse::<u8>().unwrap())
-                .map(|d| Domain::new(d).unwrap())
-                .collect()
         }
+
+        out
     }
 }
 

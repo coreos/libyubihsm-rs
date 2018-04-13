@@ -15,11 +15,6 @@
 use types::*;
 
 #[test]
-fn domain_to_string() {
-    assert_eq!(String::from("1"), String::from(Domain(1)));
-}
-
-#[test]
 fn new_domain() {
     assert_eq!(Domain(1), Domain::new(1).unwrap());
 }
