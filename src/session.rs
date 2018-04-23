@@ -708,6 +708,25 @@ impl Session {
             }
         }
     }
+
+    pub fn put_option(&self, option: DeviceOption) -> Result<(), Error> {
+        let mut bytes = option.to_bytes();
+
+        let rc = unsafe {
+            ReturnCode::from(yubihsm_sys::yh_util_put_option(
+                self.this.load(Ordering::Relaxed),
+                From::<u8>::from(option.into()),
+                bytes.len(),
+                bytes.as_mut_ptr(),
+            ))
+        };
+
+        if rc != ReturnCode::Success {
+            bail!("util_put_option failed: {}", rc);
+        }
+
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug)]
