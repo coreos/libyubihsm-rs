@@ -104,6 +104,18 @@ impl Session {
         }
     }
 
+    pub fn reset(self) -> Result<(), Error> {
+        let rc = ReturnCode::from(unsafe {
+            yubihsm_sys::yh_util_reset(self.this.load(Ordering::Relaxed))
+        });
+
+        if rc != ReturnCode::Success {
+            bail!("util_reset failed: {}", rc);
+        }
+
+        Ok(())
+    }
+
     pub fn list_objects(&self) -> ListObjectsQuery {
         ListObjectsQuery::new(&self)
     }
