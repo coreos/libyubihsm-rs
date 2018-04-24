@@ -1089,3 +1089,62 @@ impl ObjectInfo {
         })
     }
 }
+
+/// A global option for the device. See [Yubico's documentation] for more.
+///
+/// [Yubico's documentation]: https://developers.yubico.com/YubiHSM2/Commands/Put_Option.html
+#[derive(Clone, Debug)]
+pub enum DeviceOption {
+    /// Whether or not the device should refuse operations when the log store is full.
+    ForceAudit(DeviceOptionValue),
+    /// Used to toggle which specific commands should be logged. Accepts tuples of command and
+    /// option value.
+    CommandAudit(Vec<(CommandType, DeviceOptionValue)>),
+}
+
+impl DeviceOption {
+    pub(crate) fn to_bytes(&self) -> Vec<u8> {
+        let mut out = Vec::new();
+
+        match *self {
+            DeviceOption::ForceAudit(val) => {
+                out.push(val as u8);
+            }
+            DeviceOption::CommandAudit(ref vals) => {
+                for &(cmd, val) in vals {
+                    out.push(Command::Request(cmd).into());
+                    out.push(val as u8);
+                }
+            }
+        }
+
+        out
+    }
+}
+
+impl<'a> From<&'a DeviceOption> for u8 {
+    fn from(opt: &'a DeviceOption) -> u8 {
+        match *opt {
+            DeviceOption::ForceAudit(_) => 0x01,
+            DeviceOption::CommandAudit(_) => 0x03,
+        }
+    }
+}
+
+impl From<DeviceOption> for u8 {
+    fn from(opt: DeviceOption) -> u8 {
+        (&opt).into()
+    }
+}
+
+/// A value for a global device option.
+#[derive(Clone, Copy, Debug)]
+#[repr(u8)]
+pub enum DeviceOptionValue {
+    /// The option is disabled.
+    Disabled = 0x00,
+    /// The option is enabled.
+    Enabled = 0x01,
+    /// The option is enabled and cannot be disabled.
+    Fixed = 0x02,
+}
