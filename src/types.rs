@@ -71,7 +71,7 @@ impl From<DomainParam> for Vec<Domain> {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Fail)]
 pub enum ReturnCode {
     Success,
     Memory,
@@ -549,8 +549,8 @@ impl<'a> From<&'a Capability> for String {
             Capability::DeleteOpaque => String::from("delete_opaque"),
             Capability::DeleteAuthkey => String::from("delete_authkey"),
             Capability::DeleteAsymmetric => String::from("delete_asymmetric"),
-            Capability::DeleteWrapKey => String::from("delete_wrap_key"),
-            Capability::DeleteHmacKey => String::from("delete_hmac_key"),
+            Capability::DeleteWrapKey => String::from("delete_wrapkey"),
+            Capability::DeleteHmacKey => String::from("delete_hmackey"),
             Capability::DeleteTemplate => String::from("delete_template"),
             Capability::DeleteOtpAeadKey => String::from("delete_otp_aead_key"),
             Capability::Unknown => String::from("unknown"),
@@ -606,8 +606,8 @@ where
             "delete_opaque" => Capability::DeleteOpaque,
             "delete_authkey" => Capability::DeleteAuthkey,
             "delete_asymmetric" => Capability::DeleteAsymmetric,
-            "delete_wrap_key" => Capability::DeleteWrapKey,
-            "delete_hmac_key" => Capability::DeleteHmacKey,
+            "delete_wrapkey" => Capability::DeleteWrapKey,
+            "delete_hmackey" => Capability::DeleteHmacKey,
             "delete_template" => Capability::DeleteTemplate,
             "delete_otp_aead_key" => Capability::DeleteOtpAeadKey,
             _ => Capability::Unknown,

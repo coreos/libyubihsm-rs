@@ -104,16 +104,19 @@ impl Session {
         }
     }
 
+    /// Reset the device to factory settings and reboot.
+    ///
+    /// Note that since the device reboots when this function is called, this function is far more
+    /// likely to return a `ReturnCode::NetError` upon success, since it will vanish out from
+    /// underneath the connector. However, it is left to library consumers to decide whether or not
+    /// this is an acceptable result.
     pub fn reset(self) -> Result<(), Error> {
-        let rc = ReturnCode::from(unsafe {
+        match ReturnCode::from(unsafe {
             yubihsm_sys::yh_util_reset(self.this.load(Ordering::Relaxed))
-        });
-
-        if rc != ReturnCode::Success {
-            bail!("util_reset failed: {}", rc);
+        }) {
+            ReturnCode::Success => Ok(()),
+            rc => Err(rc.into()),
         }
-
-        Ok(())
     }
 
     pub fn list_objects(&self) -> ListObjectsQuery {
