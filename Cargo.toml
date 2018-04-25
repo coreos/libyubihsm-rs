@@ -1,6 +1,6 @@
 [package]
 name = "libyubihsm"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["James Forcier <james.forcier@coreos.com>"]
 description = "FFI bindings to libyubihsm.so"
 repository = "https://github.com/coreos/libyubihsm-rs"
