@@ -71,7 +71,7 @@ impl From<DomainParam> for Vec<Domain> {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Fail)]
 pub enum ReturnCode {
     Success,
     Memory,
